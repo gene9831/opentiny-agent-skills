@@ -34,9 +34,6 @@ jobs:
           rm -rf current-repo/skills/tiny-vue-skill/demos
           rm -rf current-repo/skills/tiny-vue-skill/webdoc
 
-          # 打印一下目录
-          ls tinyvue-repo
-
           # 复制menus.js
           cp tinyvue-repo/examples/sites/demos/pc/menus.js current-repo/skills/tiny-vue-skill/menus.js
 

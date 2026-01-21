@@ -46,3 +46,7 @@
 ## 在 vscode 中启用skill
 
 按 `ctrl + ,` 打开设置界面，搜索 `useagentskills` 会看到实验性支持`Use Agent Skills`功能， 勾选启用即可。
+
+## 发布最新的SKILL
+
+手工执行一下”同步TinyVue仓库“的Github Action即可！
