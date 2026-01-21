@@ -41,11 +41,11 @@ jobs:
           cp tinyvue-repo/examples/sites/demos/pc/menus.js current-repo/skills/tiny-vue-skill/menus.js
 
           # 复制apis
-          cp tinyvue-repo/examples/sites/demos/apis/. current-repo/skills/tiny-vue-skill/apis
+          cp -r tinyvue-repo/examples/sites/demos/apis/. current-repo/skills/tiny-vue-skill/apis
           # 复制demos
-          cp tinyvue-repo/examples/sites/demos/pc/app/. current-repo/skills/tiny-vue-skill/demos
+          cp -r tinyvue-repo/examples/sites/demos/pc/app/. current-repo/skills/tiny-vue-skill/demos
           # 复制apis
-          cp tinyvue-repo/examples/sites/demos/pc/webdoc/. current-repo/skills/tiny-vue-skill/webdoc
+          cp -r tinyvue-repo/examples/sites/demos/pc/webdoc/. current-repo/skills/tiny-vue-skill/webdoc
       # 4、提交代码
       - name: Commit
         run: |
