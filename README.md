@@ -1,7 +1,48 @@
 # SKILLS 集合
 
-本仓库包含`TinyVue`组件开发等skills,
+本仓库包含`TinyVue`组件开发等技能工具。
 
 ## 安装使用
 
-1、克隆仓库到本地，然后将`skills` 文件夹复制到用户工程或都用户全局配置的指定路径中
+1. 克隆复制式使用
+
+克隆仓库到本地，然后将`skills` 文件夹复制到用户工程或都用户全局配置的指定路径中,具体位置请参考各IDE/CLI 的官方文档。以下为部分工具的安装位置：
+
+<!-- available-agents:start -->
+
+| Agent          | `--agent`        | 项目内路径          | 全局路径                        |
+| -------------- | ---------------- | ------------------- | ------------------------------- |
+| Amp            | `amp`            | `.agents/skills/`   | `~/.config/agents/skills/`      |
+| Antigravity    | `antigravity`    | `.agent/skills/`    | `~/.gemini/antigravity/skills/` |
+| Claude Code    | `claude-code`    | `.claude/skills/`   | `~/.claude/skills/`             |
+| Clawdbot       | `clawdbot`       | `skills/`           | `~/.clawdbot/skills/`           |
+| Codex          | `codex`          | `.codex/skills/`    | `~/.codex/skills/`              |
+| Cursor         | `cursor`         | `.cursor/skills/`   | `~/.cursor/skills/`             |
+| Droid          | `droid`          | `.factory/skills/`  | `~/.factory/skills/`            |
+| Gemini CLI     | `gemini-cli`     | `.gemini/skills/`   | `~/.gemini/skills/`             |
+| GitHub Copilot | `github-copilot` | `.github/skills/`   | `~/.copilot/skills/`            |
+| Goose          | `goose`          | `.goose/skills/`    | `~/.config/goose/skills/`       |
+| Kilo Code      | `kilo`           | `.kilocode/skills/` | `~/.kilocode/skills/`           |
+| Kiro CLI       | `kiro-cli`       | `.kiro/skills/`     | `~/.kiro/skills/`               |
+| OpenCode       | `opencode`       | `.opencode/skills/` | `~/.config/opencode/skills/`    |
+| Roo Code       | `roo`            | `.roo/skills/`      | `~/.roo/skills/`                |
+| Trae           | `trae`           | `.trae/skills/`     | `~/.trae/skills/`               |
+| Windsurf       | `windsurf`       | `.windsurf/skills/` | `~/.codeium/windsurf/skills/`   |
+
+<!-- available-agents:end -->
+
+2. 使用 `add-skill` 工具
+   `add-skill` 是 vercel-labs 提供的一个npm 工具命令，[README.md](https://github.com/vercel-labs/add-skill/tree/main)。 它支持列出 github 仓库中的 skills, 以及自动安装用户工程或用户全局的位置。
+
+```bash
+  # 列出所有的可能技能
+  npx add-skill opentiny/agent-skills --list
+
+  # 全局安装 tiny-vue-skill， 支持 claude-code/vs code
+  npx add-skill opentiny/agent-skills -g --skill tiny-vue-skill --agent claude-code
+
+```
+
+## 在 vscode 中启用skill
+
+按 `ctrl + ,` 打开设置界面，搜索 `useagentskills` 会看到实验性支持`Use Agent Skills`， 勾选启用即可。
