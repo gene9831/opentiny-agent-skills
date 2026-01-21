@@ -1,0 +1,48 @@
+name: 同步TinyVue仓库内的文档进来
+
+on:
+  workflow_dispatch:
+
+jobs:
+  copy-folders:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1、检出当前仓库
+      - name: Chheckout current repo
+        uses: actions/checkout@v4
+        with:
+          path: current-repo
+          token: ${{ secrets.MY_GITHUB_PUSH_TOKEN }} # 具有写入权限的令牌
+      # 2、检出当前仓库
+      - name: Chheckout TinyVue repo
+        uses: actions/checkout@v4
+        with:
+          path: tinyvue-repo
+          token: ${{ secrets.MY_GITHUB_PUSH_TOKEN }}
+      # 3、 复制文件夹
+      - name: copy copy-folders
+        run: |
+          # 清除当前
+          rm -rf current-repo/skills/tiny-vue-skill/apis
+          rm -rf current-repo/skills/tiny-vue-skill/demos
+          rm -rf current-repo/skills/tiny-vue-skill/webdoc
+
+          # 复制menus.js
+          cp tinyvue-repo/examples/sites/demos/pc/menus.js current-repo/skills/tiny-vue-skill/menus.js
+
+          # 复制apis
+          cp tinyvue-repo/examples/sites/demos/apis/. current-repo/skills/tiny-vue-skill/apis
+          # 复制demos
+          cp tinyvue-repo/examples/sites/demos/pc/app/. current-repo/skills/tiny-vue-skill/demos
+          # 复制apis
+          cp tinyvue-repo/examples/sites/demos/pc/webdoc/. current-repo/skills/tiny-vue-skill/webdoc
+      # 4、提交代码
+      - name: Commit
+        run: |
+          cd current-repo
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add .
+          # 只有在有更新时，才提交
+          git diff --quiet && git diff --staged --quiet || (git commit -m "同步TinyVue文档到SKills" && git push)
