@@ -23,6 +23,7 @@ jobs:
       - name: Chheckout TinyVue repo
         uses: actions/checkout@v4
         with:
+          repository: opentiny/tiny-vue
           path: tinyvue-repo
           token: ${{ secrets.MY_GITHUB_PUSH_TOKEN }}
       # 3、 复制文件夹
