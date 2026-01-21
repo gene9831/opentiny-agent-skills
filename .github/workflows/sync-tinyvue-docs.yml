@@ -3,6 +3,11 @@ name: 同步TinyVue仓库内的文档进来
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   copy-folders:
     runs-on: ubuntu-latest
