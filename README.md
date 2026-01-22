@@ -32,6 +32,7 @@
 <!-- available-agents:end -->
 
 2. 使用 `add-skill` 工具安装
+
    `add-skill` 是 vercel-labs 提供的一个npm 工具命令，[README.md](https://github.com/vercel-labs/add-skill/tree/main)。 它支持列出 github 仓库中的 skills, 以及自动安装用户工程或用户全局的位置。
 
 ```bash
@@ -43,14 +44,20 @@
 
 ```
 
+> IMPORTANT: 不同的AI IDE/CLI， 对skill的配置可能不同，请严格参考其文档进行配置路径。
+
 ## 在 vscode 中启用skill
 
-按 `ctrl + ,` 打开设置界面，搜索 `useagentskills` 会看到实验性支持`Use Agent Skills`功能， 勾选启用即可。
+按快捷键 `ctrl + ,` 打开设置界面，搜索 `useagentskills` 会看到实验性支持`Use Agent Skills`功能， 勾选启用即可。
 
-## 发布最新的SKILL
+## 同步最新的TinyVue文档/示例
 
-手工执行一下”同步TinyVue仓库“的Github Action即可！
+随着TinyVue的不断开发，此仓库的Skill资源肯定会落后于主仓库。需要同步时，手工执行一下”同步TinyVue仓库“的Github Action即可！
 
 ## 使用示例
 
-在test目录中，新建一个vue工程，然后安装TinyVue组件，使用Grid组件开发一个中国省级信息查询的表格，要求有：序号，省名，人口，面积，GDP等信息，这些信息要支持排序的功能，省名的列要冻结在最左边。 表格的顶部有过滤查询省名的功能。
+使用以下语句测试：
+
+1. 在test目录中，新建一个vue工程，然后安装TinyVue组件，使用Grid组件开发一个中国省级信息查询的表格，要求有：序号，省名，人口，面积，GDP等信息，这些信息要支持排序的功能，省名的列要冻结在最左边。 表格的顶部有过滤查询省名的功能。
+
+2. 为当前TinyVue的工程增加深色模式的能力
