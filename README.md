@@ -33,7 +33,7 @@
 
 2. 使用 `add-skill` 工具安装
 
-   `add-skill` 是 vercel-labs 提供的一个npm 工具命令，[README.md](https://github.com/vercel-labs/add-skill/tree/main)。 它支持列出 github 仓库中的 skills, 以及自动安装用户工程或用户全局的位置。
+   `add-skill` 是 vercel-labs 提供的一个npm 工具命令，辅助我们安装skill到本地环境上，详细内容请参见其[README.md](https://github.com/vercel-labs/add-skill/tree/main)。 它支持列出 github 仓库中的 skills, 以及自动安装到用户工程或用户全局的位置。
 
 ```bash
   # 列出所有的可能技能
