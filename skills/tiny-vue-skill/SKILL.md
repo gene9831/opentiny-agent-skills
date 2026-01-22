@@ -32,10 +32,10 @@ metadata:
 
 根据任务类型，查阅对应的规则文档并严格遵循规范：
 
-| 规则文档 | 适用场景 |
-| -------- | -------- |
+| 规则文档                                    | 适用场景                                           |
+| ------------------------------------------- | -------------------------------------------------- |
 | [project-setting](rules/project-setting.md) | 安装 TinyVue、引入组件、配置国际化、主题、深色模式 |
-| [component-use](rules/component-use.md) | 查找组件 API 文档和示例代码源码 |
+| [component-use](rules/component-use.md)     | 查找组件 API 文档和示例代码源码                    |
 
 ## 重要约束
 
