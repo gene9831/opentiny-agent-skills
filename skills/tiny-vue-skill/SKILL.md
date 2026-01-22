@@ -1,6 +1,6 @@
 ---
 name: tinyvue-develop-helper
-description: TinyVue 组件库代码的**生成**和**实施指导**，在分析，规划，或生成组件或修改组件时使用。本技能提供严格的 API 约束，文档和示例的查找流程和代码规范。
+description: TinyVue 组件库代码的**生成**和**实施指导**，在分析、规划或生成组件时使用。本技能提供严格的 API 约束、文档和示例的查找流程以及代码规范。
 license: MIT
 metadata:
   author: opentiny
@@ -22,7 +22,7 @@ metadata:
 
 ```
 ./menus.js     - 所有组件的名称索引
-./webdocs/     - 工程配置文档（安装、引入、i18n、主题等）
+./webdoc/      - 工程配置文档（安装、引入、i18n、主题等）
 ./apis/        - 组件 API 文档（属性、事件、插槽、类型）
 ./demos/       - 组件示例代码源码
 ./rules/       - 查找和使用规范
