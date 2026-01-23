@@ -40,7 +40,7 @@
   npx add-skill opentiny/agent-skills --list
 
   # 全局安装 tiny-vue-skill， 支持 claude-code/vs code
-  npx add-skill opentiny/agent-skills -g --skill tiny-vue-skill --agent claude-code
+  npx add-skill opentiny/agent-skills -g --skill tinyvue-develop-helper --agent claude-code
 
 ```
 
