@@ -45,7 +45,8 @@
 ```
 
 > IMPORTANT: 不同的AI IDE/CLI， 对skill的配置可能不同，请严格参考其文档进行配置路径。
-> IMPORTANT: TinyVue组件也会定期升级，需要重新复制或重新执行 add-skill 命令来定期更新Skill 。
+
+> IMPORTANT: TinyVue组件也会定期升级，需要重新复制或重新执行 add-skill 命令来更新Skill 。
 
 ## 在 vscode 中启用skill
 
