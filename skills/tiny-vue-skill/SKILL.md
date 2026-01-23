@@ -4,7 +4,7 @@ description: TinyVue 组件库代码的**生成**和**实施指导**，在分析
 license: MIT
 metadata:
   author: opentiny
-  version: "0.1.0"
+  version: "3.28.0"
 ---
 
 # TinyVue 组件库开发助手
