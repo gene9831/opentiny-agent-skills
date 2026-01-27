@@ -37,16 +37,16 @@
 
 ```bash
   # 列出所有的可能技能
-  npx add-skill opentiny/agent-skills --list
+  npx skills add opentiny/agent-skills --list
 
   # 全局安装 tiny-vue-skill， 支持 claude-code/vs code
-  npx add-skill opentiny/agent-skills -g --skill tinyvue-develop-helper --agent claude-code
+  npx skills add opentiny/agent-skills -g --skill tinyvue-develop-helper --agent claude-code
 
 ```
 
 > IMPORTANT: 不同的AI IDE/CLI， 对skill的配置可能不同，请严格参考其文档进行配置路径。
 
-> IMPORTANT: TinyVue组件也会定期升级，需要重新复制或重新执行 add-skill 命令来更新Skill 。
+> IMPORTANT: TinyVue组件也会定期升级，需要重新复制或重新执行 skills add 命令来更新Skill 。
 
 ## 在 vscode 中启用skill
 
