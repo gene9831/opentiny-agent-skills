@@ -42,6 +42,9 @@
   # 全局安装 tiny-vue-skill， 支持 claude-code/vs code
   npx skills add opentiny/agent-skills -g --skill tinyvue-develop-helper --agent claude-code
 
+  # 项目级安装 tiny-vue-skill， 支持 claude-code/vs code
+  npx skills add opentiny/agent-skills --skill tinyvue-develop-helper --agent claude-code
+
 ```
 
 > IMPORTANT: 不同的AI IDE/CLI， 对skill的配置可能不同，请严格参考其文档进行配置路径。
