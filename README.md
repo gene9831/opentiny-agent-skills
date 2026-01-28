@@ -39,8 +39,11 @@
   # 列出所有的可能技能
   npx skills add opentiny/agent-skills --list
 
-  # 全局安装 tiny-vue-skill， 支持 claude-code/vs code
+  # 全局安装 tinyvue-develop-helper， 支持 claude-code/vs code
   npx skills add opentiny/agent-skills -g --skill tinyvue-develop-helper --agent claude-code
+
+  # 项目级安装 tinyvue-develop-helper， 支持 claude-code/vs code
+  npx skills add opentiny/agent-skills --skill tinyvue-develop-helper --agent claude-code
 
 ```
 
