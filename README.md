@@ -1,10 +1,43 @@
 # SKILLS 集合
 
-本仓库包含`TinyVue`组件开发等技能工具。
+本仓库包含使用OpenTiny各产品开发相关的技能工具。
 
 ## 安装使用
 
-1. 克隆复制式使用
+### 方式一：通过 Claude Code Skills Market 添加（Claude Code用户推荐）
+
+使用 Claude Code 内置的插件市场功能，可以快速安装 OpenTiny 技能。
+
+```bash
+# 启动claude code后添加市场及插件，也可以执行/plugin后在界面交互式添加及管理
+/plugin marketplace add https://github.com/opentiny/opentiny-agent-skills
+/plugin install tinyvue-develop-helper@opentiny-skills
+
+# 或者在未启动状态可以执行下面命令添加市场及插件
+claude plugin marketplace add https://github.com/opentiny/opentiny-agent-skills
+claude plugin install tinyvue-develop-helper@opentiny-skills
+```
+
+
+### 方式二：使用 `add-skill` 工具安装
+
+   `add-skill` 是 vercel-labs 提供的一个npm 工具命令，辅助我们安装skill到本地环境上，详细内容请参见其[README.md](https://github.com/vercel-labs/add-skill/tree/main)。 它支持列出 github 仓库中的 skills, 以及自动安装到用户工程或用户全局的位置。
+
+```bash
+  # 列出所有的可能技能
+  npx skills add opentiny/agent-skills --list
+
+  # 全局安装 tinyvue-develop-helper， 支持 claude-code/vs code
+  npx skills add opentiny/agent-skills -g --skill tinyvue-develop-helper --agent claude-code
+
+  # 项目级安装 tinyvue-develop-helper， 支持 claude-code/vs code
+  npx skills add opentiny/agent-skills --skill tinyvue-develop-helper --agent claude-code
+
+```
+
+### 方式三：克隆复制式使用
+
+1. 克隆仓库到本地，然后将`skills` 文件夹复制到用户工程或都用户全局配置的指定路径中,具体位置请参考各IDE/CLI 的官方文档。以下为部分工具的安装位置：
 
 克隆仓库到本地，然后将`skills` 文件夹复制到用户工程或都用户全局配置的指定路径中,具体位置请参考各IDE/CLI 的官方文档。以下为部分工具的安装位置：
 
@@ -31,25 +64,12 @@
 
 <!-- available-agents:end -->
 
-2. 使用 `add-skill` 工具安装
 
-   `add-skill` 是 vercel-labs 提供的一个npm 工具命令，辅助我们安装skill到本地环境上，详细内容请参见其[README.md](https://github.com/vercel-labs/add-skill/tree/main)。 它支持列出 github 仓库中的 skills, 以及自动安装到用户工程或用户全局的位置。
+> **IMPORTANT**: 不同的AI IDE/CLI， 对skill的配置可能不同，请严格参考其文档进行配置路径。
 
-```bash
-  # 列出所有的可能技能
-  npx skills add opentiny/agent-skills --list
+> **IMPORTANT**: TinyVue组件也会定期升级，需要重新复制或重新执行 skills add 命令来更新Skill 。
 
-  # 全局安装 tinyvue-develop-helper， 支持 claude-code/vs code
-  npx skills add opentiny/agent-skills -g --skill tinyvue-develop-helper --agent claude-code
-
-  # 项目级安装 tinyvue-develop-helper， 支持 claude-code/vs code
-  npx skills add opentiny/agent-skills --skill tinyvue-develop-helper --agent claude-code
-
-```
-
-> IMPORTANT: 不同的AI IDE/CLI， 对skill的配置可能不同，请严格参考其文档进行配置路径。
-
-> IMPORTANT: TinyVue组件也会定期升级，需要重新复制或重新执行 skills add 命令来更新Skill 。
+> **通过市场安装的优势**: 使用 `claude plugin marketplace` 安装后，可以使用 `claude plugin update` 命令轻松更新技能。
 
 ## 在 vscode 中启用skill
 
@@ -58,6 +78,92 @@
 ## 同步最新的TinyVue文档/示例
 
 随着TinyVue的不断开发，此仓库的Skill资源肯定会落后于主仓库。需要同步时，手工执行一下”同步TinyVue仓库“的Github Action即可！
+
+## 如何添加新的 Skill
+
+本仓库采用 Claude Code Plugin Marketplace 规范结构，添加新技能需要以下步骤：
+
+### 1. 创建技能目录结构
+
+在 `skills/` 目录下创建新的技能目录：
+
+```bash
+mkdir -p skills/your-skill-name/.claude-plugin
+```
+
+### 2. 创建插件配置文件
+
+在 `skills/your-skill-name/.claude-plugin/plugin.json` 中定义插件元数据：
+
+```json
+{
+  "name": "your-skill-name",
+  "description": "技能的简短描述",
+  "version": "1.0.0",
+  "author": {
+    "name": "OpenTiny"
+  },
+  "license": "MIT"
+}
+```
+
+### 3. 创建技能定义文件
+
+在 `skills/your-skill-name/SKILL.md` 中定义技能：
+
+```markdown
+---
+name: your-skill-name
+description: 技能的详细描述
+license: MIT
+metadata:
+  author: OpenTiny
+  version: "1.0.0"
+---
+
+# 技能说明
+
+这里是技能的详细使用说明...
+```
+
+之后可以按需添加其他的技能文档或者脚本等
+
+### 4. 更新市场配置
+
+在 `.claude-plugin/marketplace.json` 的 `plugins` 数组中添加新技能：
+
+```json
+{
+  "name": "your-skill-name",
+  "source": "./skills/your-skill-name",
+  "description": "技能的简短描述",
+  "version": "1.0.0",
+  "author": {
+    "name": "OpenTiny"
+  },
+  "license": "MIT",
+  "tags": ["tag1", "tag2"],
+  "keywords": ["keyword1", "keyword2"]
+}
+```
+
+### 目录结构示例
+
+```
+skills/
+├── your-skill-name/
+│   ├── .claude-plugin/
+│   │   └── plugin.json          # 插件元数据
+│   └── SKILL.md                 # 技能定义文件
+└── tiny-vue-skill/              # 现有技能
+    └── ...
+```
+
+### 注意事项
+
+- 技能名称使用 kebab-case（小写字母和连字符）
+- 语义化版本号遵循 SemVer 规范
+- 更新版本后记得同步修改 `plugin.json` 和 `marketplace.json`
 
 ## 使用示例
 
