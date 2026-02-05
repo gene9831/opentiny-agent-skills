@@ -11,7 +11,7 @@
   },
   "plugins": [
     {
-      "name": "tinyvue-develop-helper",
+      "name": "tiny-vue-skill",
       "source": "./skills/tiny-vue-skill",
       "description": "TinyVue 组件库代码的生成和实施指导",
       "version": "3.28.1",
