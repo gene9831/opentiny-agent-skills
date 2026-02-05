@@ -11,35 +11,32 @@
 ```bash
 # 启动claude code后添加市场及插件，也可以执行/plugin后在界面交互式添加及管理
 /plugin marketplace add https://github.com/opentiny/opentiny-agent-skills
-/plugin install tinyvue-develop-helper@opentiny-skills
+/plugin install tiny-vue-skill@opentiny-skills
 
 # 或者在未启动状态可以执行下面命令添加市场及插件
 claude plugin marketplace add https://github.com/opentiny/opentiny-agent-skills
-claude plugin install tinyvue-develop-helper@opentiny-skills
+claude plugin install tiny-vue-skill@opentiny-skills
 ```
 
+### 方式二：使用 `skills` 工具安装
 
-### 方式二：使用 `add-skill` 工具安装
-
-   `add-skill` 是 vercel-labs 提供的一个npm 工具命令，辅助我们安装skill到本地环境上，详细内容请参见其[README.md](https://github.com/vercel-labs/add-skill/tree/main)。 它支持列出 github 仓库中的 skills, 以及自动安装到用户工程或用户全局的位置。
+`skills` 是 vercel-labs 提供的一个npm 工具命令，辅助我们安装skill到本地环境上，详细内容请参见其[README.md](https://github.com/vercel-labs/skills)。 它支持列出 github 仓库中的 skills, 以及自动安装到用户工程或用户全局的位置。
 
 ```bash
   # 列出所有的可能技能
   npx skills add opentiny/agent-skills --list
 
-  # 全局安装 tinyvue-develop-helper， 支持 claude-code/vs code
-  npx skills add opentiny/agent-skills -g --skill tinyvue-develop-helper --agent claude-code
+  # 全局安装 tiny-vue-skill， 支持 claude-code/vs code
+  npx skills add opentiny/agent-skills -g --skill tiny-vue-skill --agent claude-code
 
-  # 项目级安装 tinyvue-develop-helper， 支持 claude-code/vs code
-  npx skills add opentiny/agent-skills --skill tinyvue-develop-helper --agent claude-code
+  # 项目级安装 tiny-vue-skill， 支持 claude-code/vs code
+  npx skills add opentiny/agent-skills --skill tiny-vue-skill --agent claude-code
 
 ```
 
 ### 方式三：克隆复制式使用
 
 1. 克隆仓库到本地，然后将`skills` 文件夹复制到用户工程或都用户全局配置的指定路径中,具体位置请参考各IDE/CLI 的官方文档。以下为部分工具的安装位置：
-
-克隆仓库到本地，然后将`skills` 文件夹复制到用户工程或都用户全局配置的指定路径中,具体位置请参考各IDE/CLI 的官方文档。以下为部分工具的安装位置：
 
 <!-- available-agents:start -->
 
@@ -63,7 +60,6 @@ claude plugin install tinyvue-develop-helper@opentiny-skills
 | Windsurf       | `windsurf`       | `.windsurf/skills/` | `~/.codeium/windsurf/skills/`   |
 
 <!-- available-agents:end -->
-
 
 > **IMPORTANT**: 不同的AI IDE/CLI， 对skill的配置可能不同，请严格参考其文档进行配置路径。
 
@@ -118,7 +114,7 @@ description: 技能的详细描述
 license: MIT
 metadata:
   author: OpenTiny
-  version: "1.0.0"
+  version: '1.0.0'
 ---
 
 # 技能说明

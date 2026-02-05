@@ -1,10 +1,10 @@
 ---
-name: tinyvue-develop-helper
+name: tiny-vue-skill
 description: TinyVue 组件库代码的**生成**和**实施指导**，在分析、规划或生成组件时使用。本技能提供严格的 API 约束、文档和示例的查找流程以及代码规范。
 license: MIT
 metadata:
   author: opentiny
-  version: "3.28.1"
+  version: '3.28.1'
 ---
 
 # TinyVue 组件库开发助手
