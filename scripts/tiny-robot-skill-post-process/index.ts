@@ -107,7 +107,11 @@ async function processDirRecursive(
       }
     }
   } catch (err) {
-    // 忽略目录不存在等情况
+    // readdir may fail if the directory doesn't exist; log other errors
+    const code = err?.code;
+    if (code !== 'ENOENT') {
+      console.error('Error processing directory', dir, err);
+    }
   }
 }
 
