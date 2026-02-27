@@ -1,0 +1,59 @@
+name: Sync TinyRobot docs into skills
+
+on:
+  # 仅支持手动触发（Actions 页面 Run workflow）
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  copy-folders:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: '10'
+
+      # 检出当前仓库（agent-skills），用于后续写入并推送
+      - name: Checkout current repo
+        uses: actions/checkout@v4
+        with:
+          path: current-repo
+          token: ${{ secrets.MY_GITHUB_PUSH_TOKEN }}
+
+      # 检出 TinyRobot 仓库 develop 分支，作为文档来源
+      - name: Checkout TinyRobot repo
+        uses: actions/checkout@v4
+        with:
+          repository: opentiny/tiny-robot
+          path: tinyrobot-repo
+          ref: develop
+          token: ${{ secrets.MY_GITHUB_PUSH_TOKEN }}
+
+      # 用 TinyRobot 文档覆盖 skill 内的 src、demos 及主题配置
+      - name: Copy from TinyRobot docs
+        run: |
+          rm -rf current-repo/skills/tiny-robot-skill/src
+          rm -rf current-repo/skills/tiny-robot-skill/demos
+          cp tinyrobot-repo/docs/.vitepress/themeConfig.ts current-repo/skills/tiny-robot-skill/themeConfig.ts
+          cp -r tinyrobot-repo/docs/src/. current-repo/skills/tiny-robot-skill/src
+          cp -r tinyrobot-repo/docs/demos/. current-repo/skills/tiny-robot-skill/demos
+
+      # 执行后处理脚本（如清理 demo 中不需要的文件、格式化等）
+      - name: Run post-process
+        run: |
+          cd current-repo/scripts
+          pnpm i
+          pnpm tiny-robot-skill-post-process
+
+      # 若有变更则提交并推送到当前仓库
+      - name: Commit and push
+        run: |
+          cd current-repo
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add .
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Sync TinyRobot docs to tiny-robot-skill" && git push)
