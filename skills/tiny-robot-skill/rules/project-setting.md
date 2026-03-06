@@ -47,7 +47,7 @@ examples/assistant.md
 
 These show how multiple components work together.
 
-# Utilities
+## Utilities
 
 TinyRobot provides helper utilities documented in:
 

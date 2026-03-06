@@ -6,13 +6,13 @@
 
 在 `skills/tiny-robot-skill` 目录下会做以下处理：
 
-1. **src/**（组件与指南的 markdown 文档，以及部分 JS 文件）
+1. **components/**、**examples/**、**guide/**、**migration/**、**tools/**（同步后的文档目录，以及部分 JS 文件）
    - 对所有 `*.md` 做**文档压缩**：去掉行尾空格、将连续多个空行压成两个空行，保留段落结构。
-   - 对 `*.js`做 AST 压缩。
+   - 对 `*.js` 做 AST 压缩。
 
 2. **demos/**（组件示例代码）  
    - **删除**：所有 `*.md`、`*.spec.ts`。  
-   - **压缩**：递归处理所有 `*.js`，用 AST 压成单行（不修改变量名）。`.ts` 因 esprima 不解析 TypeScript 语法而跳过，保持原样。
+   - **压缩**：递归处理所有 `*.js` 与 `*.ts`。`*.js` 使用 AST 压缩；`*.ts` 先尝试 AST 压缩，遇到 TypeScript 语法时退化为仅压缩空白。
 
 ## 压缩方式说明
 

@@ -122,7 +122,7 @@ examples/assistant.md
 
 These examples show how multiple components and utilities work together in real UI pages.
 
-### 4 Follow code generation rules
+### 5 Follow code generation rules
 
 Read:
 
@@ -133,7 +133,7 @@ rules/code-generation.md
 
 to ensure the generated code follows TinyRobot patterns.
 
-### 5 Check project configuration and utilities
+### 6 Check project configuration and utilities
 
 If the user asks about setup or theme configuration, read:
 
