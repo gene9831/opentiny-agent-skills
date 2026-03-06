@@ -1,6 +1,8 @@
 /**
- * TinyRobot SKILL 后处理：压缩文档与 demo 代码以降低 token 占用，
- * 避免文件过大（如 100 行限制），使内容适合作为 AI SKILL 使用。
+ * TinyRobot SKILL 后处理：
+ * 在同步文档到 `skills/tiny-robot-skill` 后，
+ * 对文档和 demo 代码进行压缩，减少 token 占用，
+ * 让内容更适合 AI SKILL 场景。
  */
 import fs from 'fs/promises';
 import path from 'path';
@@ -8,14 +10,19 @@ import { fileURLToPath } from 'url';
 import * as esprima from 'esprima';
 import * as escodegen from 'escodegen';
 
-// 根据本脚本路径解析 skill 目录（scripts/tiny-robot-skill-post-process -> skills/tiny-robot-skill）
+// 根据当前脚本路径解析 skill 目录：
+// scripts/tiny-robot-skill-post-process -> skills/tiny-robot-skill
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SKILL_DIR = path.resolve(__dirname, '..', '..', 'skills', 'tiny-robot-skill');
 
-/** 相对 skill 目录的路径：与组件无关的文档，从 skill 中排除（同步仍会复制，在此删除） */
-const EXCLUDED_FILES = ['src/guide/plugin-badge.md'];
+/**
+ * 相对 SKILL_DIR 的路径。
+ * 某些非组件文档在同步时仍会被复制，在此步骤中删除。
+ */
+const EXCLUDED_FILES = ['guide/plugin-badge.md'];
+const DOC_DIRS = ['components', 'examples', 'guide', 'migration', 'tools'];
 
-/** 仅压缩空白（不解析 AST）。在 esprima 无法解析（如 TypeScript）时使用。 */
+/** AST 无法解析时，回退为仅压缩空白。 */
 function minifyWhitespaceOnly(content: string): string {
   return content
     .split('\n')
@@ -38,8 +45,8 @@ async function compressJsOrTs(filePath: string) {
 }
 
 /**
- * 压缩 .ts 文件。esprima 仅解析 JavaScript；若文件含 TypeScript 语法（类型注解等），
- * 则回退为仅压缩空白，仍能减少 token，并避免在 CI 中静默无操作。
+ * 压缩 .ts 文件（带回退）。
+ * Esprima 只支持 JavaScript；遇到 TS 语法时回退为仅压缩空白。
  */
 async function compressTsWithFallback(filePath: string) {
   try {
@@ -59,7 +66,7 @@ async function compressTsWithFallback(filePath: string) {
   }
 }
 
-/** 合并多余换行并修剪行尾，减少 markdown 的 token 体积 */
+/** 合并多余空行并裁剪 markdown 行尾空白。 */
 function compressMarkdownContent(content: string): string {
   const lines = content.split('\n').map((line) => line.trimEnd());
   const joined = lines.join('\n');
@@ -82,6 +89,7 @@ async function processDirRecursive(
   options: {
     md?: boolean;
     js?: boolean;
+    ts?: boolean;
     deleteFilter?: (name: string) => boolean;
   }
 ) {
@@ -105,9 +113,12 @@ async function processDirRecursive(
       if (options.js && e.name.endsWith('.js')) {
         await compressJsOrTs(full);
       }
+      if (options.ts && e.name.endsWith('.ts')) {
+        await compressTsWithFallback(full);
+      }
     }
   } catch (err) {
-    // readdir may fail if the directory doesn't exist; log other errors
+    // 目录可能不存在，仅记录非 ENOENT 的异常。
     const code = err?.code;
     if (code !== 'ENOENT') {
       console.error('Error processing directory', dir, err);
@@ -118,35 +129,28 @@ async function processDirRecursive(
 async function run() {
   const target = SKILL_DIR;
 
-  // 1. themeConfig.ts：压缩为单行以减 token。走 TS 安全路径：能当 JS 解析则用 AST，否则仅压空白。
-  const themeConfigPath = path.join(target, 'themeConfig.ts');
-  try {
-    await fs.access(themeConfigPath);
-    await compressTsWithFallback(themeConfigPath);
-  } catch {
-    // 文件可能不存在
-  }
-
-  // 2. 删除排除的文档（非组件相关；需排除的路径见上方 EXCLUDED_FILES）
+  // 1) 删除排除文档（路径见 EXCLUDED_FILES）。
   for (const rel of EXCLUDED_FILES) {
     const fullPath = path.join(target, rel);
     try {
       await fs.unlink(fullPath);
       console.log('Removed', fullPath);
     } catch {
-      // 文件可能不存在
+      // 在某些同步状态下，文件可能不存在。
     }
   }
 
-  // 3. src/：组件文档 markdown 及任意 .js（如 public/sw.js），压缩 .md 与 .js
-  const srcDir = path.join(target, 'src');
-  await processDirRecursive(srcDir, { md: true, js: true });
+  // 2) 处理文档目录：递归压缩 .md 和 .js。
+  for (const docDir of DOC_DIRS) {
+    await processDirRecursive(path.join(target, docDir), { md: true, js: true });
+  }
 
-  // 4. demos/：删除 .md 和 .spec.ts；仅压缩 .js（esprima 不解析 TypeScript，.ts 保持原样）
+  // 3) 处理 demos/：删除 .md 和 .spec.ts；压缩 .js 与 .ts。
   const demosDir = path.join(target, 'demos');
   await processDirRecursive(demosDir, {
     deleteFilter: (name) => name.endsWith('.md') || name.endsWith('.spec.ts'),
     js: true,
+    ts: true,
   });
 
   console.log('Done.');

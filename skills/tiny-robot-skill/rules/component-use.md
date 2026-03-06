@@ -1,57 +1,160 @@
 ---
-title: TinyRobot component usage
+title: TinyRobot Component Lookup Rules
 impact: HIGH
-tags: TinyRobot component index, API docs, demo code
 ---
 
-# TinyRobot component usage
+# TinyRobot Component Lookup Rules
 
-## Component index
+This document defines how AI agents should locate and understand TinyRobot components.
 
-Component list is in [themeConfig.ts](../themeConfig.ts) from the source repo. The `sharedSidebarItems` array has groups: 指南 (guide), 组件 (components), 工具 (tools). Each group has `text` (e.g. "组件") and `items`: `{ text: 'Bubble 气泡', link: 'bubble' }`. Use `link` as the **key** to find the component folder under `demos/` (e.g. `demos/bubble/`).
+Always follow the lookup workflow below when generating TinyRobot component code.
 
-Example (from themeConfig.ts):
+---
+
+## Step 1 — Identify the Component
+
+Locate available components by inspecting the markdown files under:
 
 ```
-{
-  text: '组件',
-  base: '/components/',
-  items: [
-    { text: 'Bubble 气泡', link: 'bubble' },
-    { text: 'Sender 消息输入框', link: 'sender' }
-  ]
-}
+
+components/
+
 ```
 
-Use `item.link` as the demo folder name under `../demos/` and the component doc under `../src/components/{link}.md`.
+Each file name (without extension) is the **component key**.
 
-## Component docs (src/)
+Examples:
 
-Component markdown docs are under `../src/`:
+```
 
-- **Component API/usage**: `../src/components/{link}.md` (e.g. `bubble.md` for link `bubble`). Contains props, events, slots, examples.
-- **Guide**: `../src/guide/` (quick-start.md, theme-config.md, update-log.md).
-- **Tools**: `../src/tools/` (ai-client.md, message.md, conversation.md, utils.md).
-- **Examples / migration**: `../src/examples/`, `../src/migration/`.
+components/bubble.md   → component key: bubble
+components/sender.md   → component key: sender
+components/container.md → component key: container
 
-## Demo index (demos/)
+```
 
-Under `../demos`, each folder is one component’s demos:
+The component key is used to locate both documentation and demo implementations.
 
-- `{link}/` – folder for component (e.g. `bubble/`, `sender/`)
-- Inside: demo sources (`.vue`, `.ts`, `.js`; post-process removes `.md` and `.spec.ts`)
+---
 
-Look up demos by component `link` from themeConfig.ts sharedSidebarItems, then open the matching folder under `demos/`.
+## Step 2 — Read Component Documentation
 
-## Lookup order (do not skip)
+Component documentation is located in:
 
-1. **Component name** – Resolve from `../themeConfig.ts` (sharedSidebarItems, items[].link).
-2. **Component doc** – In `../src/components/{link}.md` for API/usage; `../src/guide/` for project setup.
-3. **Demos** – In `../demos/{link}/` and use file names to find example source.
+```
 
-### Rules
+components/<component-key>.md
 
-1. Always correlate by component name/key; do not guess from other libraries.
-2. Prefer Chinese descriptions in props/docs when available; ignore en-US-only text when zh-CN exists.
-3. If a prop or example is missing, do not invent or substitute.
-4. On errors, do not guess; report or ask.
+```
+
+Examples:
+
+```
+
+components/bubble.md
+components/sender.md
+components/prompts.md
+
+```
+
+Documentation usually contains:
+
+- component description
+- props
+- slots
+- usage examples
+- API constraints
+
+Always use documented APIs when generating code.
+
+---
+
+## Step 3 — Locate Demo Implementations
+
+Demo code is stored in:
+
+```
+
+demos/<component-key>/
+
+```
+
+Examples:
+
+```
+
+demos/bubble/basic.vue
+demos/bubble/streaming.vue
+demos/sender/word-limit.vue
+demos/prompts/basic.vue
+
+```
+
+Demos provide **working Vue implementations** and represent the recommended usage patterns.
+
+---
+
+## Step 4 — Follow Demo and Example Patterns
+
+When generating TinyRobot code:
+
+- follow the structure used in demos
+- reuse props shown in demos
+- reuse slots demonstrated in demos
+- prefer minimal and working examples
+
+Do **not invent**:
+
+- component props
+- slot names
+- events
+- usage patterns
+
+Only use APIs confirmed in documentation or demos.
+
+For full chat layouts or multi-component pages, also inspect:
+
+```
+examples/
+```
+
+for higher-level usage patterns and page compositions.
+
+---
+
+## Additional Notes
+
+Documentation files may reference demos using the following syntax:
+
+```
+
+<demo vue="../demos/bubble/basic.vue"/>
+```
+
+These paths refer to files inside the `demos/` directory.
+
+When such references appear, always inspect the corresponding demo file to understand the real implementation.
+
+---
+
+## Component Composition
+
+When composing multiple TinyRobot components (for example `container`, `bubble`, `sender`, and `prompts`) into a full chat UI:
+
+- first look for existing combinations in `examples/` or component-specific demos
+- follow the layout and nesting patterns used in those examples
+- avoid inventing new layout patterns unless clearly requested by the user
+
+If no suitable example exists, keep the composition simple and explain any assumptions in natural language.
+
+---
+
+## Missing Components
+
+If the user asks for a component whose key cannot be found under `components/`:
+
+- do **not** invent a new TinyRobot component
+- tell the user that this component does not exist in the TinyRobot documentation
+- suggest the closest existing components when appropriate (for example `bubble`, `sender`, `container`, `prompts`)
+
+Always be explicit about uncertainty instead of guessing component names or APIs.
