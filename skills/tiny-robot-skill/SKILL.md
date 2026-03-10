@@ -1,170 +1,99 @@
 ---
 name: tiny-robot-skill
-description: TinyRobot component library **code generation** and **implementation guidance**. Use when analyzing, planning, or generating TinyRobot (AI chat UI) components. This skill provides API constraints, doc/example lookup flow, and code conventions.
+description: Guides TinyRobot Vue AI chat UI implementation, setup, and code generation. Use when the user mentions TinyRobot, OpenTiny TinyRobot, Bubble, Sender, Prompts, chat container, message list, conversation tools, or asks to build chat interfaces with TinyRobot components.
 license: MIT
 metadata:
   author: opentiny
-  version: '1.0.0'
+  version: '1.1.0'
 ---
 
 # TinyRobot Component Library Assistant
 
-This skill helps generate **correct TinyRobot UI code** by providing:
+Use this skill to produce accurate TinyRobot guidance and code with the smallest necessary context.
 
-- component documentation
-- demo implementations
-- project configuration guides
-- code generation rules
+TinyRobot is a Vue-oriented component library for AI chat interfaces.
 
-TinyRobot is a Vue-based component library designed for **AI chat interfaces**.
-
-Typical UI includes:
-
-- chat container
-- message bubbles
-- message input
-- suggestion prompts
-- welcome screens
-
-## When to use
+## When to use this skill
 
 Use this skill when the user:
 
-- builds an AI chat UI
-- uses TinyRobot components
-- asks for TinyRobot examples
-- needs TinyRobot project setup
-- wants demo implementations
+- explicitly mentions TinyRobot or OpenTiny TinyRobot
+- asks about `Bubble`, `Sender`, `Prompts`, chat containers, or similar TinyRobot components
+- asks for TinyRobot component usage or examples
+- wants to build an AI chat UI with TinyRobot
+- needs TinyRobot setup, import, or theme guidance
+- asks about TinyRobot message, conversation, or AI request integration
 
 Example requests:
 
 - "Create a chat UI using TinyRobot"
-- "How to use Bubble component"
-- "Show Sender example"
-- "How to configure TinyRobot theme"
+- "How do I use the Bubble component?"
+- "Show a Sender example"
+- "How do I configure TinyRobot theme?"
+- "How should I manage conversation state with TinyRobot?"
 
-## When NOT to use
+## When not to use this skill
 
-Avoid using this skill when:
+Do not use this skill when:
 
-- the project is **not a Vue-based UI**
-- the user does **not** mention TinyRobot and there is **no** TinyRobot docs or components in the current repo
-- the user only asks for **general AI UX/product design** without needing concrete TinyRobot components or code
+- the task is not related to TinyRobot
+- the user only wants generic AI UX advice without TinyRobot code
+- the project is not using Vue and the user does not want TinyRobot-specific adaptation
 
-## Skill Resources
+## Quick Routing
 
-Main documentation directories:
+Start by classifying the request, then read only the relevant rule file.
 
-```
-components/
-demos/
-guide/
-migration/
-tools/
-examples/
-```
+| Request type                               | Read first                 | Use for                                                                |
+| ------------------------------------------ | -------------------------- | ---------------------------------------------------------------------- |
+| Component usage or page composition        | `rules/component-use.md`   | Component lookup, composition, demos, missing component handling       |
+| Project setup or theme configuration       | `rules/project-setting.md` | Installation, integration, theme, adapting docs setup to user projects |
+| Code generation                            | `rules/code-generation.md` | Output style, Vue SFC conventions, simplicity, comment language        |
+| Message, conversation, or AI request logic | `rules/tool-use.md`        | Safe tool usage, state separation, API uncertainty handling            |
 
-Rules:
+For most implementation tasks, read `rules/code-generation.md` after the task-specific rule file.
 
-```
-rules/component-use.md
-rules/project-setting.md
-rules/code-generation.md
-rules/tool-use.md
-```
+## Resources in This Skill
 
-## Recommended Workflow
+This skill is organized around these resource layers:
 
-When generating TinyRobot code, follow this order.
+- `components/` for component documentation
+- `demos/` for working component demos
+- `examples/` for full page or multi-component usage
+- `guide/` for setup and configuration guidance
+- `tools/` for message, conversation, and helper utilities
+- `migration/` for version migration notes when relevant
+- `rules/component-use.md`
+- `rules/project-setting.md`
+- `rules/code-generation.md`
+- `rules/tool-use.md`
 
-### 1 Identify component
+Use the smallest relevant layer first, then expand only when the task needs more context.
 
-Identify which TinyRobot component the user needs.
-The full component list and supported features are defined by the markdown files under:
+## Execution Rules
 
-```
-components/
-```
+Follow this order:
 
-### 2 Read component documentation
+1. use the routing table above to pick the minimum relevant rule files
+2. read the matching source files before generating code
+3. prefer this skill's docs and demos first, then existing TinyRobot usage in the user's project
+4. use only confirmed props, slots, events, functions, and patterns
 
-Load documentation from:
+If the relevant files are missing or do not document the requested API:
 
-```
-components/<component>.md
-```
+- do not guess
+- do not invent new TinyRobot APIs
+- explain what is missing
+- offer the closest documented alternative when possible
 
-The `<component>` part is the component key (for example `bubble`, `sender`).
+## Output Principles
 
-### 3 Check demo implementations
-
-Find examples in:
-
-```
-demos/<component>/
-```
-
-Always prefer demos when generating code.
-
-### 4 Check full examples
-
-For complete chat layouts or multi-component pages, read:
-
-```
-examples/
-```
-
-Example:
-
-```
-examples/assistant.md
-```
-
-These examples show how multiple components and utilities work together in real UI pages.
-
-### 5 Follow code generation rules
-
-Read:
-
-```
-rules/code-generation.md
-
-```
-
-to ensure the generated code follows TinyRobot patterns.
-
-### 6 Check project configuration and utilities
-
-If the user asks about setup or theme configuration, read:
-
-```
-rules/project-setting.md
-```
-
-If the user asks about message/conversation management or AI client utilities, read:
-
-```
-tools/
-```
-
-For detailed rules on how to safely use TinyRobot tools (message, conversation, AI client, and utils) in generated code, read:
-
-```
-rules/tool-use.md
-```
-
-## Important Principles
-
-When generating TinyRobot code:
-
-Prefer:
-
-- demo implementations
-- real component APIs
-- simple component composition
-
-Avoid:
-
-- inventing component props
-- guessing slot names
-- creating components not listed in the component index
+- prefer existing demos or in-repo usage over invented patterns
+- prefer small Vue single-file component examples
+- prefer `<script setup>` unless the user's project clearly uses another style
+- write code comments in English
+- keep visible UI text in the user's language when appropriate
+- keep examples minimal and directly runnable
+- separate UI rendering from message or conversation state logic
+- avoid overengineering or abstract wrappers
+- stay aligned with the user's requested scope
