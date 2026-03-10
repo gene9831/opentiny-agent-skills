@@ -4,7 +4,7 @@ description: Guides TinyRobot Vue AI chat UI implementation, setup, and code gen
 license: MIT
 metadata:
   author: opentiny
-  version: '1.1.0'
+  version: '1.0.0'
 ---
 
 # TinyRobot Component Library Assistant
