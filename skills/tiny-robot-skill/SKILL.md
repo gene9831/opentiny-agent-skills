@@ -32,14 +32,6 @@ Example requests:
 - "How do I configure TinyRobot theme?"
 - "How should I manage conversation state with TinyRobot?"
 
-## When not to use this skill
-
-Do not use this skill when:
-
-- the task is not related to TinyRobot
-- the user only wants generic AI UX advice without TinyRobot code
-- the project is not using Vue and the user does not want TinyRobot-specific adaptation
-
 ## Quick Routing
 
 Start by classifying the request, then read only the relevant rule file.
@@ -49,7 +41,7 @@ Start by classifying the request, then read only the relevant rule file.
 | Component usage or page composition        | `rules/component-use.md`   | Component lookup, composition, demos, missing component handling       |
 | Project setup or theme configuration       | `rules/project-setting.md` | Installation, integration, theme, adapting docs setup to user projects |
 | Code generation                            | `rules/code-generation.md` | Output style, Vue SFC conventions, simplicity, comment language        |
-| Message, conversation, or AI request logic | `rules/tool-use.md`        | Safe tool usage, state separation, API uncertainty handling            |
+| Message, conversation, or AI request logic | `rules/kit-use.md`         | Safe tool usage, state separation, API uncertainty handling            |
 
 For most implementation tasks, read `rules/code-generation.md` after the task-specific rule file.
 
@@ -66,34 +58,6 @@ This skill is organized around these resource layers:
 - `rules/component-use.md`
 - `rules/project-setting.md`
 - `rules/code-generation.md`
-- `rules/tool-use.md`
+- `rules/kit-use.md`
 
 Use the smallest relevant layer first, then expand only when the task needs more context.
-
-## Execution Rules
-
-Follow this order:
-
-1. use the routing table above to pick the minimum relevant rule files
-2. read the matching source files before generating code
-3. prefer this skill's docs and demos first, then existing TinyRobot usage in the user's project
-4. use only confirmed props, slots, events, functions, and patterns
-
-If the relevant files are missing or do not document the requested API:
-
-- do not guess
-- do not invent new TinyRobot APIs
-- explain what is missing
-- offer the closest documented alternative when possible
-
-## Output Principles
-
-- prefer existing demos or in-repo usage over invented patterns
-- prefer small Vue single-file component examples
-- prefer `<script setup>` unless the user's project clearly uses another style
-- write code comments in English
-- keep visible UI text in the user's language when appropriate
-- keep examples minimal and directly runnable
-- separate UI rendering from message or conversation state logic
-- avoid overengineering or abstract wrappers
-- stay aligned with the user's requested scope
