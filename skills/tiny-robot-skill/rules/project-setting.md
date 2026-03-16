@@ -14,6 +14,7 @@ This document explains the TinyRobot documentation project structure.
 - `tools/` - Helper utilities (message.md, conversation.md, utils.md)
 - `components/` - Component documentation
 - `demos/` - Component demo implementations
+- `migration/` - Version migration notes when relevant
 
 ## User Projects
 
