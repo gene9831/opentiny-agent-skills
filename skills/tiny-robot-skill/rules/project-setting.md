@@ -1,19 +1,31 @@
 ---
-title: TinyRobot project setup
+title: TinyRobot Project Setup
 impact: HIGH
-tags: TinyRobot, install, import, theme, quick-start
 ---
 
-# TinyRobot project setup
+# TinyRobot Project Setup
 
-## Doc index
+This document explains the TinyRobot documentation project structure.
 
-Guide docs are under `../src/guide/` in this skill (synced from tiny-robot docs):
+## Documentation Structure
 
-| File | Description |
-|------|-------------|
-| [quick-start](../src/guide/quick-start.md) | Quick start and project setup |
-| [theme-config](../src/guide/theme-config.md) | Theme configuration |
-| [update-log](../src/guide/update-log.md) | Changelog / update log |
+- `guide/` - Setup guides (quick-start.md, theme-config.md, update-log.md)
+- `examples/` - Complete UI examples (assistant.md, etc.)
+- `tools/` - Helper utilities (message.md, conversation.md, utils.md)
+- `components/` - Component documentation
+- `demos/` - Component demo implementations
+- `migration/` - Version migration notes when relevant
 
-Refer to the above files for installation, component import, and theme configuration. Use Chinese descriptions when present; ignore en-US-only content.
+## User Projects
+
+The docs project uses VitePress. When helping users integrate TinyRobot:
+
+- Read `guide/quick-start.md` and adapt to their framework
+- Do not assume their project is VitePress
+
+## Quick Reference
+
+- Installation → `guide/quick-start.md`
+- Theming → `guide/theme-config.md`
+- Message/Conversation → `tools/message.md`, `tools/conversation.md`
+- AI calls → patterns in `tools/message.md` (useMessage + responseProvider)

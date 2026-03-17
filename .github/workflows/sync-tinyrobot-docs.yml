@@ -33,14 +33,14 @@ jobs:
           ref: develop
           token: ${{ secrets.MY_GITHUB_PUSH_TOKEN }}
 
-      # 用 TinyRobot 文档覆盖 skill 内的 src、demos 及主题配置
+      # 用 TinyRobot 文档覆盖 skill 内的 src、demos 等目录
       - name: Copy from TinyRobot docs
         run: |
-          rm -rf current-repo/skills/tiny-robot-skill/src
-          rm -rf current-repo/skills/tiny-robot-skill/demos
-          cp tinyrobot-repo/docs/.vitepress/themeConfig.ts current-repo/skills/tiny-robot-skill/themeConfig.ts
-          cp -r tinyrobot-repo/docs/src/. current-repo/skills/tiny-robot-skill/src
-          cp -r tinyrobot-repo/docs/demos/. current-repo/skills/tiny-robot-skill/demos
+          rm -rf current-repo/skills/tiny-robot-skill/demos && cp -r tinyrobot-repo/docs/demos/. current-repo/skills/tiny-robot-skill/demos
+          for dir in components examples guide migration tools; do
+            rm -rf "current-repo/skills/tiny-robot-skill/${dir}"
+            cp -r "tinyrobot-repo/docs/src/${dir}" "current-repo/skills/tiny-robot-skill/${dir}"
+          done
 
       # 执行后处理脚本（如清理 demo 中不需要的文件、格式化等）
       - name: Run post-process
