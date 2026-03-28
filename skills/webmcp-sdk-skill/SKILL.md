@@ -1,6 +1,6 @@
 ---
 name: webmcp-sdk-skill
-description: 指导如何使用 WebMCP SDK库去开发WebAgent的技能包。它包含 TinyRemoter，WebMcpServer，WebMcpClient，createRemoter， AI-Extension插件开发的文档及指南。
+description: 指导如何使用 WebMCP SDK库去开发WebAgent的技能包，将前端应用快速智能化。它包含 TinyRemoter，WebMcpServer，WebMcpClient，createRemoter， AI-Extension插件开发的文档及指南。
 license: MIT
 metadata:
   author: opentiny
