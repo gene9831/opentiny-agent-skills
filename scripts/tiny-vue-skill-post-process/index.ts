@@ -274,7 +274,7 @@ async function process() {
     );
   });
 
-  // 3. apis: remove en-US in desc and compress js files
+  // 3. apis: 最新策略是将js 转为 md文件，减少 1/3 的体积
   const apisDir = path.join(target, 'apis');
   await processApis(apisDir);
 
@@ -285,7 +285,7 @@ async function process() {
     (name) => name.endsWith('.md') || name.endsWith('.spec.ts')
   );
 
-  // 5. demos: recursively compress all *.js files
+  // 5. demos中的 button.js 存放所有示例， 最新策略也是转为 md文件
   await compressJsRecursive(demosDir);
 
   // 6. compress demos/icon/iconGroups.js
