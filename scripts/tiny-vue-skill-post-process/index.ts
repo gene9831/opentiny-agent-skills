@@ -27,24 +27,6 @@ async function compressFile(filePath: string) {
   }
 }
 
-async function compressJsRecursive(dir: string) {
-  try {
-    const entries = await fs.readdir(dir, { withFileTypes: true });
-    for (const e of entries) {
-      const full = path.join(dir, e.name);
-      if (e.isDirectory()) {
-        await compressJsRecursive(full);
-        continue;
-      }
-      if (e.isFile() && e.name.endsWith('.js')) {
-        await compressFile(full);
-      }
-    }
-  } catch (err) {
-    // ignore missing dirs
-  }
-}
-
 async function removeFilesByFilter(dir: string, filter: (name: string) => boolean) {
   try {
     const entries = await fs.readdir(dir, { withFileTypes: true });
@@ -253,6 +235,116 @@ function escapeTableCell(text: string): string {
   return String(text).replace(/\|/g, '\\|').replace(/\n/g, '<br>');
 }
 
+// ********** Process Demos **********
+async function processDemos(demosDir: string) {
+  try {
+    // 遍历所有组件目录
+    const componentDirs = await fs.readdir(demosDir, { withFileTypes: true });
+
+    for (const componentDir of componentDirs) {
+      if (!componentDir.isDirectory()) continue;
+
+      const componentName = componentDir.name;
+      const webdocPath = path.join(demosDir, componentName, 'webdoc');
+
+      // 检查 webdoc 目录是否存在
+      if (!(await fileExists(webdocPath))) continue;
+
+      // 读取 webdoc 目录下的所有 JS 文件
+      const jsFiles = await fs.readdir(webdocPath, { withFileTypes: true });
+
+      for (const jsFile of jsFiles) {
+        if (!jsFile.isFile() || !jsFile.name.endsWith('.js')) continue;
+
+        const jsFilePath = path.join(webdocPath, jsFile.name);
+
+        try {
+          const content = await fs.readFile(jsFilePath, 'utf8');
+
+          // 解析 JS 文件获取 demos 数据
+          const ast = esprima.parseModule(content, { range: true, comment: true, tokens: true });
+
+          let demosData: any[] = [];
+          estraverse.traverse(ast, {
+            enter(node) {
+              if (node.type === 'ExportDefaultDeclaration' && node.declaration) {
+                const code = escodegen.generate(node.declaration);
+                try {
+                  // eslint-disable-next-line no-new-func
+                  const exportData = new Function('return ' + code)();
+                  if (exportData && exportData.demos && Array.isArray(exportData.demos)) {
+                    demosData = exportData.demos;
+                  }
+                } catch (err) {
+                  console.error('Failed to evaluate', jsFilePath, err);
+                }
+              }
+            },
+          });
+
+          if (demosData.length === 0) {
+            console.log('Skipping', jsFilePath, '- no demos found');
+            continue;
+          }
+
+          // 生成 Markdown 表格
+          const mdContent = convertDemosToMarkdown(demosData, componentName);
+
+          // 保存为同名 .md 文件
+          const mdFilePath = jsFilePath.replace(/\.js$/, '.md');
+          await fs.unlink(jsFilePath);
+          await fs.writeFile(mdFilePath, mdContent, 'utf8');
+
+          console.log('Processed Demo', jsFilePath, '->', mdFilePath);
+        } catch (parseErr) {
+          console.error(
+            'Failed to process demo',
+            jsFilePath,
+            '-',
+            parseErr instanceof Error ? parseErr.message : parseErr
+          );
+        }
+      }
+    }
+  } catch (err) {
+    console.error('processDemos failed', demosDir, err);
+  }
+}
+
+function convertDemosToMarkdown(demos: any[], componentName: string): string {
+  const lines: string[] = [];
+
+  // 添加标题
+  lines.push(`# ${componentName} Demos`);
+  lines.push('');
+
+  // 创建表格头
+  lines.push('| demoId | 名称 | 描述 | 代码文件 |');
+  lines.push('|--------|------|------|----------|');
+
+  // 遍历每个 demo
+  for (const demo of demos) {
+    const demoId = demo.demoId || '';
+    const name = demo.name && demo.name['zh-CN'] ? demo.name['zh-CN'] : '';
+    const desc = demo.desc && demo.desc['zh-CN'] ? demo.desc['zh-CN'] : '';
+
+    // 处理 codeFiles，拼接组件名
+    let codeFilesStr = '';
+    if (demo.codeFiles && Array.isArray(demo.codeFiles)) {
+      codeFilesStr = demo.codeFiles.map((file: string) => `${componentName}/${file}`).join('<br>');
+    }
+
+    lines.push(
+      `| ${escapeTableCell(demoId)} | ${escapeTableCell(name)} | ${escapeTableCell(
+        desc
+      )} | ${escapeTableCell(codeFilesStr)} |`
+    );
+  }
+
+  lines.push('');
+  return lines.join('\n');
+}
+
 // ***************** 正式处理逻辑 ******************
 async function process() {
   const target = '../skills/tiny-vue-skill';
@@ -285,9 +377,8 @@ async function process() {
     (name) => name.endsWith('.md') || name.endsWith('.spec.ts')
   );
 
-  // 5. demos中的 button.js 存放所有示例， 最新策略也是转为 md文件
-  await compressJsRecursive(demosDir);
-
+  // 5. demos: 遍历所有 js 文件，提取 demos 属性并转为 md 表格
+  await processDemos(demosDir);
   // 6. compress demos/icon/iconGroups.js
   const iconGroups = path.join(demosDir, 'icon', 'iconGroups.js');
   if (await fileExists(iconGroups)) {
