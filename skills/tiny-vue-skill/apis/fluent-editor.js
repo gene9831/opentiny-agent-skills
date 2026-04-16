@@ -1,4 +1,142 @@
-export default{mode:['pc','mobile-first'],apis:[{name:'fluent-editor',type:'component',props:[{name:'before-editor-init',type:'(FluentEditor) => void',defaultValue:'',meta:{stable:'3.21.0'},desc:{'zh-CN':'FluentEditor 初始化之前执行的钩子\uFF0C用于注册自定义 FluentEditor 模块和格式\u3002'},pcDemo:'before-editor-init'},{name:'data-type',type:'boolean',defaultValue:'true',desc:{'zh-CN':'初始化的富文本数据格式是否为 Delta 格式\uFF0C默认为 Delta 格式\uFF0C设置成 false\uFF0C则为 HTML 格式'},mode:['pc','mobile-first'],pcDemo:'data-switch'},{name:'data-upgrade',type:'boolean',defaultValue:'true',desc:{'zh-CN':'富文本数据输出格式是否为 Delta 格式\uFF0C默认为 Delta 格式\uFF0C设置成 false\uFF0C则为 HTML 格式'},mode:['pc','mobile-first'],pcDemo:'data-switch'},{name:'disabled',type:'boolean',defaultValue:'false',desc:{'zh-CN':'是否为不可编辑状态'},mode:['pc','mobile-first'],pcDemo:'disabled'},{name:'image-upload',typeAnchorName:'IImageUploadOptions',type:'IImageUploadOptions',defaultValue:'',desc:{'zh-CN':'图片上传模块配置项'},mode:['pc','mobile-first'],pcDemo:'image-upload'},{name:'modelValue / v-model',type:'string',defaultValue:'\'\'',desc:{'zh-CN':'绑定值'},mode:['pc','mobile-first'],pcDemo:'basic-usage'},{name:'options',type:'object',defaultValue:'',desc:{'zh-CN':'编辑器配置项\uFF0C参考 Quill 文档\uFF1Ahttps://quilljs.com/docs/configuration#options'},mode:['pc','mobile-first'],pcDemo:'options'},{name:'zIndex',type:'number',defaultValue:'',desc:{'zh-CN':'编辑器的 z-index'},mode:['pc','mobile-first'],pcDemo:''}],events:[],methods:[],slots:[]}],types:[{name:'IImageUploadOptions',type:'interface',code:`
+export default {
+  mode: ['pc', 'mobile-first'],
+  apis: [
+    {
+      name: 'fluent-editor',
+      type: 'component',
+      props: [
+        {
+          name: 'before-editor-init',
+          type: '(FluentEditor) => void',
+          defaultValue: '',
+          meta: {
+            stable: '3.21.0'
+          },
+          desc: {
+            'zh-CN': 'FluentEditor 初始化之前执行的钩子，用于注册自定义 FluentEditor 模块和格式。',
+            'en-US': ''
+          },
+          pcDemo: 'before-editor-init'
+        },
+        {
+          name: 'before-link-open',
+          typeAnchorName: 'IBeforeLinkOpen',
+          type: 'IBeforeLinkOpen',
+          defaultValue: '',
+          meta: {
+            stable: '3.30.0'
+          },
+          desc: {
+            'zh-CN':
+              '点击富文本中的超链接前触发。返回 false（或 Promise resolve false）可拦截跳转；返回 true/undefined 继续跳转。',
+            'en-US': ''
+          },
+          mode: ['pc', 'mobile-first'],
+          pcDemo: ''
+        },
+        {
+          name: 'data-type',
+          type: 'boolean',
+          defaultValue: 'true',
+          desc: {
+            'zh-CN': '初始化的富文本数据格式是否为 Delta 格式，默认为 Delta 格式，设置成 false，则为 HTML 格式',
+            'en-US': ''
+          },
+          mode: ['pc', 'mobile-first'],
+          pcDemo: 'data-switch'
+        },
+        {
+          name: 'data-upgrade',
+          type: 'boolean',
+          defaultValue: 'true',
+          desc: {
+            'zh-CN': '富文本数据输出格式是否为 Delta 格式，默认为 Delta 格式，设置成 false，则为 HTML 格式',
+            'en-US': ''
+          },
+          mode: ['pc', 'mobile-first'],
+          pcDemo: 'data-switch'
+        },
+        {
+          name: 'disabled',
+          type: 'boolean',
+          defaultValue: 'false',
+          desc: {
+            'zh-CN': '是否为不可编辑状态',
+            'en-US': ''
+          },
+          mode: ['pc', 'mobile-first'],
+          pcDemo: 'disabled'
+        },
+        {
+          name: 'image-upload',
+          typeAnchorName: 'IImageUploadOptions',
+          type: 'IImageUploadOptions',
+          defaultValue: '',
+          desc: {
+            'zh-CN': '图片上传模块配置项',
+            'en-US': ''
+          },
+          mode: ['pc', 'mobile-first'],
+          pcDemo: 'image-upload'
+        },
+        {
+          name: 'modelValue / v-model',
+          type: 'string',
+          defaultValue: "''",
+          desc: {
+            'zh-CN': '绑定值',
+            'en-US': 'Bound Value'
+          },
+          mode: ['pc', 'mobile-first'],
+          pcDemo: 'basic-usage'
+        },
+        {
+          name: 'options',
+          type: 'object',
+          defaultValue: '',
+          desc: {
+            'zh-CN': '编辑器配置项，参考 Quill 文档：https://quilljs.com/docs/configuration#options',
+            'en-US': ''
+          },
+          mode: ['pc', 'mobile-first'],
+          pcDemo: 'options'
+        },
+        {
+          name: 'zIndex',
+          type: 'number',
+          defaultValue: '',
+          desc: {
+            'zh-CN': '编辑器的 z-index',
+            'en-US': ''
+          },
+          mode: ['pc', 'mobile-first'],
+          pcDemo: ''
+        }
+      ],
+      events: [],
+      methods: [],
+      slots: []
+    }
+  ],
+  types: [
+    {
+      name: 'IBeforeLinkOpen',
+      type: 'type',
+      code: `
+type IBeforeLinkOpen = (payload: {
+  url: string // 过滤后的安全链接
+  rawUrl: string // 原始 href
+  target: string // 超链接 target，默认 _blank
+  rel: string // 超链接 rel
+  event: MouseEvent // 点击事件对象
+  quill: any // 当前编辑器实例
+}) => boolean | void | Promise<boolean | void>
+      `
+    },
+    {
+      name: 'IImageUploadOptions',
+      type: 'interface',
+      code: `
 interface IImageUploadOptions {
   url: string, // 图片上传地址
   method: string, // 上传方法
@@ -9,4 +147,7 @@ interface IImageUploadOptions {
   success: (serverResponse: { file: { downloadUrl: string } }[], next: (imageUrl: string) => void) => void, // 上传成功回调信息
   fail: (serverError: string) => void // 上传失败回调信息
 }
-      `}]};
+      `
+    }
+  ]
+}
