@@ -59,5 +59,5 @@ metadata:
 - 严格遵循工程文档和组件 API 规范
 - 严禁使用其他开源库信息猜测 TinyVue 组件用法
 - 查找组件信息必须按顺序进行：组件名 → API 文档 → 示例代码
-- 在 Vue 的模板中引用组件时，组件名前缀使用 tiny， 比如 `<tiny-button> </tiny-button>`
+- 在 Vue 的模板中引用组件时，组件名前缀使用 `tiny-`， 比如 `<tiny-button> </tiny-button>`
 - 不要使用业务组件
