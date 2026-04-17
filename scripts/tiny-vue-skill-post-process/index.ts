@@ -27,54 +27,6 @@ async function compressFile(filePath: string) {
   }
 }
 
-function removeEnUSFromDescAst(content: string) {
-  const ast = esprima.parseModule(content, { range: true, comment: true, tokens: true });
-  estraverse.traverse(ast, {
-    enter(node) {
-      // find Property nodes where key === 'desc' and value is ObjectExpression
-      if (node.type === 'Property') {
-        const key = (node as any).key;
-        const value = (node as any).value;
-        let name: string | null = null;
-        if (key) {
-          if (key.type === 'Literal') name = String((key as any).value);
-          else if (key.type === 'Identifier') name = (key as any).name;
-        }
-        if (name === 'desc' && value && value.type === 'ObjectExpression') {
-          (value as any).properties = (value as any).properties.filter((p: any) => {
-            let pn: string | null = null;
-            const pk = p.key;
-            if (pk) {
-              if (pk.type === 'Literal') pn = String(pk.value);
-              else if (pk.type === 'Identifier') pn = pk.name;
-            }
-            return pn !== 'en-US';
-          });
-        }
-      }
-    },
-  });
-  return escodegen.generate(ast, { format: { compact: true } });
-}
-
-async function compressJsRecursive(dir: string) {
-  try {
-    const entries = await fs.readdir(dir, { withFileTypes: true });
-    for (const e of entries) {
-      const full = path.join(dir, e.name);
-      if (e.isDirectory()) {
-        await compressJsRecursive(full);
-        continue;
-      }
-      if (e.isFile() && e.name.endsWith('.js')) {
-        await compressFile(full);
-      }
-    }
-  } catch (err) {
-    // ignore missing dirs
-  }
-}
-
 async function removeFilesByFilter(dir: string, filter: (name: string) => boolean) {
   try {
     const entries = await fs.readdir(dir, { withFileTypes: true });
@@ -112,6 +64,7 @@ async function removeFilesByFilterRecursive(dir: string, filter: (name: string) 
   }
 }
 
+// ********** Process APIs **********
 async function processApis(apisDir: string) {
   try {
     const entries = await fs.readdir(apisDir, { withFileTypes: true });
@@ -120,16 +73,279 @@ async function processApis(apisDir: string) {
       if (!e.name.endsWith('.js')) continue;
       const full = path.join(apisDir, e.name);
       let content = await fs.readFile(full, 'utf8');
-      // remove 'en-US' properties inside desc via AST and compress
-      const out = removeEnUSFromDescAst(content);
-      await fs.writeFile(full, out, 'utf8');
-      console.log('Processed API', full);
+
+      try {
+        // Parse the JS content to get the data structure
+        const ast = esprima.parseModule(content, { range: true, comment: true, tokens: true });
+
+        // Extract the default export object
+        let exportData: any = null;
+        estraverse.traverse(ast, {
+          enter(node) {
+            if (node.type === 'ExportDefaultDeclaration' && node.declaration) {
+              // Evaluate the AST to get the actual data
+              const code = escodegen.generate(node.declaration);
+              try {
+                // eslint-disable-next-line no-new-func
+                exportData = new Function('return ' + code)();
+              } catch (err) {
+                console.error('Failed to evaluate', full, err);
+              }
+            }
+          },
+        });
+
+        if (!exportData || !exportData.apis) {
+          // eslint-disable-next-line no-console
+          console.log('Skipping', full, '- no apis found');
+          continue;
+        }
+
+        // Convert to markdown format
+        const mdContent = convertToMarkdown(exportData);
+
+        // Save as .md file
+        const mdPath = full.replace(/\.js$/, '.md');
+        await fs.unlink(full);
+        await fs.writeFile(mdPath, mdContent, 'utf8');
+
+        // eslint-disable-next-line no-console
+        console.log('Processed API', full, '->', mdPath);
+      } catch (parseErr) {
+        console.error(
+          'Failed to process',
+          full,
+          '-',
+          parseErr instanceof Error ? parseErr.message : parseErr
+        );
+      }
     }
   } catch (err) {
     console.error('processApis failed', apisDir, err);
   }
 }
 
+function convertToMarkdown(data: any): string {
+  const lines: string[] = [];
+
+  // // Add mode info if exists
+  // if (data.mode && data.mode.length > 0) {
+  //   lines.push(`**支持模式**: ${data.mode.join(', ')}`);
+  //   lines.push('');
+  // }
+
+  // Process each API component
+  if (data.apis && Array.isArray(data.apis)) {
+    for (const api of data.apis) {
+      lines.push(`## ${api.name}`);
+      lines.push('');
+
+      // Props table
+      if (api.props && api.props.length > 0) {
+        lines.push('### Props');
+        lines.push('');
+        lines.push('| 属性名 | 类型 | 默认值 | 说明 |');
+        lines.push('|--------|------|--------|------|');
+        for (const prop of api.props) {
+          const name = prop.name || '';
+          const type = prop.type || '';
+          const defaultValue = prop.defaultValue !== undefined ? prop.defaultValue : '';
+          const desc = prop.desc && prop.desc['zh-CN'] ? prop.desc['zh-CN'] : '';
+          lines.push(
+            `| ${escapeTableCell(name)} | ${escapeTableCell(type)} | ${escapeTableCell(
+              String(defaultValue)
+            )} | ${escapeTableCell(desc)} |`
+          );
+        }
+        lines.push('');
+      }
+
+      // Events table
+      if (api.events && api.events.length > 0) {
+        lines.push('### Events');
+        lines.push('');
+        lines.push('| 事件名 | 回调参数 | 说明 |');
+        lines.push('|--------|----------|------|');
+        for (const event of api.events) {
+          const name = event.name || '';
+          const type = event.type || '';
+          const desc = event.desc && event.desc['zh-CN'] ? event.desc['zh-CN'] : '';
+          lines.push(
+            `| ${escapeTableCell(name)} | ${escapeTableCell(type)} | ${escapeTableCell(desc)} |`
+          );
+        }
+        lines.push('');
+      }
+
+      // Methods table
+      if (api.methods && api.methods.length > 0) {
+        lines.push('### Methods');
+        lines.push('');
+        lines.push('| 方法名 | 返回值 | 说明 |');
+        lines.push('|--------|--------|------|');
+        for (const method of api.methods) {
+          const name = method.name || '';
+          const type = method.type || '';
+          const desc = method.desc && method.desc['zh-CN'] ? method.desc['zh-CN'] : '';
+          lines.push(
+            `| ${escapeTableCell(name)} | ${escapeTableCell(type)} | ${escapeTableCell(desc)} |`
+          );
+        }
+        lines.push('');
+      }
+
+      // Slots table
+      if (api.slots && api.slots.length > 0) {
+        lines.push('### Slots');
+        lines.push('');
+        lines.push('| 插槽名 | 说明 |');
+        lines.push('|--------|------|');
+        for (const slot of api.slots) {
+          const name = slot.name || '';
+          const desc = slot.desc && slot.desc['zh-CN'] ? slot.desc['zh-CN'] : '';
+          lines.push(`| ${escapeTableCell(name)} | ${escapeTableCell(desc)} |`);
+        }
+        lines.push('');
+      }
+    }
+  }
+
+  // Process types
+  if (data.types && Array.isArray(data.types)) {
+    lines.push('## Types');
+    lines.push('');
+    for (const type of data.types) {
+      lines.push(`### ${type.name}`);
+      lines.push('');
+      if (type.code) {
+        lines.push('```typescript');
+        lines.push(type.code.trim());
+        lines.push('```');
+        lines.push('');
+      }
+    }
+  }
+
+  return lines.join('\n');
+}
+
+function escapeTableCell(text: string): string {
+  if (!text) return '';
+  // Escape pipe characters and newlines in table cells
+  return String(text).replace(/\|/g, '\\|').replace(/\n/g, '<br>');
+}
+
+// ********** Process Demos **********
+async function processDemos(demosDir: string) {
+  try {
+    // 遍历所有组件目录
+    const componentDirs = await fs.readdir(demosDir, { withFileTypes: true });
+
+    for (const componentDir of componentDirs) {
+      if (!componentDir.isDirectory()) continue;
+
+      const componentName = componentDir.name;
+      const webdocPath = path.join(demosDir, componentName, 'webdoc');
+
+      // 检查 webdoc 目录是否存在
+      if (!(await fileExists(webdocPath))) continue;
+
+      // 读取 webdoc 目录下的所有 JS 文件
+      const jsFiles = await fs.readdir(webdocPath, { withFileTypes: true });
+
+      for (const jsFile of jsFiles) {
+        if (!jsFile.isFile() || !jsFile.name.endsWith('.js')) continue;
+
+        const jsFilePath = path.join(webdocPath, jsFile.name);
+
+        try {
+          const content = await fs.readFile(jsFilePath, 'utf8');
+
+          // 解析 JS 文件获取 demos 数据
+          const ast = esprima.parseModule(content, { range: true, comment: true, tokens: true });
+
+          let demosData: any[] = [];
+          estraverse.traverse(ast, {
+            enter(node) {
+              if (node.type === 'ExportDefaultDeclaration' && node.declaration) {
+                const code = escodegen.generate(node.declaration);
+                try {
+                  // eslint-disable-next-line no-new-func
+                  const exportData = new Function('return ' + code)();
+                  if (exportData && exportData.demos && Array.isArray(exportData.demos)) {
+                    demosData = exportData.demos;
+                  }
+                } catch (err) {
+                  console.error('Failed to evaluate', jsFilePath, err);
+                }
+              }
+            },
+          });
+
+          if (demosData.length === 0) {
+            console.log('Skipping', jsFilePath, '- no demos found');
+            continue;
+          }
+
+          // 生成 Markdown 表格
+          const mdContent = convertDemosToMarkdown(demosData, componentName);
+
+          // 保存为同名 .md 文件
+          const mdFilePath = jsFilePath.replace(/\.js$/, '.md');
+          await fs.unlink(jsFilePath);
+          await fs.writeFile(mdFilePath, mdContent, 'utf8');
+
+          console.log('Processed Demo', jsFilePath, '->', mdFilePath);
+        } catch (parseErr) {
+          console.error(
+            'Failed to process demo',
+            jsFilePath,
+            '-',
+            parseErr instanceof Error ? parseErr.message : parseErr
+          );
+        }
+      }
+    }
+  } catch (err) {
+    console.error('processDemos failed', demosDir, err);
+  }
+}
+
+function convertDemosToMarkdown(demos: any[], componentName: string): string {
+  const lines: string[] = [];
+
+  // 添加标题
+  lines.push(`# ${componentName} Demos`);
+  lines.push('');
+
+  // 创建表格头
+  lines.push('| demoId | 名称 | 描述 | 代码文件 |');
+  lines.push('|--------|------|------|----------|');
+
+  // 遍历每个 demo
+  for (const demo of demos) {
+    const demoId = demo.demoId || '';
+    const name = demo.name && demo.name['zh-CN'] ? demo.name['zh-CN'] : '';
+    const desc = demo.desc && demo.desc['zh-CN'] ? demo.desc['zh-CN'] : '';
+
+    // 处理 codeFiles，拼接组件名
+    let codeFilesStr = '';
+    if (demo.codeFiles && Array.isArray(demo.codeFiles)) {
+      codeFilesStr = demo.codeFiles.map((file: string) => `${componentName}/${file}`).join('<br>');
+    }
+
+    lines.push(
+      `| ${escapeTableCell(demoId)} | ${escapeTableCell(name)} | ${escapeTableCell(
+        desc
+      )} | ${escapeTableCell(codeFilesStr)} |`
+    );
+  }
+
+  lines.push('');
+  return lines.join('\n');
+}
+
+// ***************** 正式处理逻辑 ******************
 async function process() {
   const target = '../skills/tiny-vue-skill';
 
@@ -150,7 +366,7 @@ async function process() {
     );
   });
 
-  // 3. apis: remove en-US in desc and compress js files
+  // 3. apis: 最新策略是将js 转为 md文件，减少 1/3 的体积
   const apisDir = path.join(target, 'apis');
   await processApis(apisDir);
 
@@ -161,9 +377,8 @@ async function process() {
     (name) => name.endsWith('.md') || name.endsWith('.spec.ts')
   );
 
-  // 5. demos: recursively compress all *.js files
-  await compressJsRecursive(demosDir);
-
+  // 5. demos: 遍历所有 js 文件，提取 demos 属性并转为 md 表格
+  await processDemos(demosDir);
   // 6. compress demos/icon/iconGroups.js
   const iconGroups = path.join(demosDir, 'icon', 'iconGroups.js');
   if (await fileExists(iconGroups)) {
