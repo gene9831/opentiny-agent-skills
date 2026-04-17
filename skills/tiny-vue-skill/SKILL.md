@@ -1,6 +1,6 @@
 ---
 name: tiny-vue-skill
-description: 当使用 TinyVue 组件进行开发时或者配置用户的TinyVue 工程的国际化，主题配置，表单校验说明，自动导入组件等，一定要阅读本技能。本技能提供严格的 API 文档和示例，以及如何查找流程以及代码规范。
+description: 当使用 TinyVue 组件库(@opentiny/vue)进行开发时或者配置 TinyVue 工程的国际化，主题配置，表单校验说明，自动导入组件等，一定要阅读本技能。本技能提供严格的 API 文档和示例，以及如何查找流程以及代码规范。
 license: MIT
 metadata:
   author: opentiny
@@ -10,6 +10,15 @@ metadata:
 # TinyVue 组件库开发助手
 
 本技能提供 TinyVue 组件库的完整开发资源，包括组件目录、API 文档、示例代码和工程配置指南，帮助用户**快速生成符合规范的代码**。
+
+- 组件库对应的依赖包为`@opentiny/vue`
+- 图标库对应的依赖包为`@opentiny/vue-icon`
+- 组件库的样式依赖包为 `@opentiny/vue-theme`
+- 组件库的公共逻辑包为 `@opentiny/vue-renderless`
+- 组件库的公共函数包为 `@opentiny/utils`
+- 组件库的公共 hook 包为 `@opentiny/vue-hooks`
+- 组件库的公共指令包为 `@opentiny/vue-directive`
+- 组件库的国际化包为： `@opentiny/vue-locale`
 
 ## 使用时机
 
@@ -22,7 +31,7 @@ metadata:
 
 - **Layout (布局)**: 优先使用该组件进行页面布局。通过嵌套 `Row` (行) 和 `Col` (列) 实现栅格布局。
 - **Grid (表格)**: 用于大规模数据的展示、分页、过滤、排序及直接修改。
-- **Form (表单)**: 用于数据录入和校验，提供丰富的表单选项。
+- **Form (表单)**: 用于数据录入和校验，提供丰富的表单选项, `Form` 和 `FormItem`要配合使用。
 - **Input (输入框)**: 用于单行或多行的文本输入。
 - **Icon (图标)**: TinyVue 的图标使用方式与业界不同。图标均为**函数**（如 `IconEdit()`），需在组件中执行后方能渲染。
 
