@@ -172,7 +172,7 @@ export const cmpMenus = [
       { 'nameCn': '富文本', 'name': 'FluentEditor', 'key': 'fluent-editor' },
       { 'nameCn': '表单', 'name': 'Form', 'key': 'form' },
       { 'nameCn': '输入框', 'name': 'Input', 'key': 'input' },
-      { 'nameCn': ' IP地址输入框', 'name': 'IpAddress', 'key': 'ip-address' },
+      { 'nameCn': 'IP地址输入框', 'name': 'IpAddress', 'key': 'ip-address' },
       { 'nameCn': '数字输入框', 'name': 'Numeric', 'key': 'numeric' },
       { 'nameCn': '标签输入框', 'name': 'TagInput', 'key': 'tag-input', 'meta': { 'experimental': '3.29.0' } },
       { 'nameCn': '弹出编辑', 'name': 'PopEditor', 'key': 'popeditor' },
@@ -392,31 +392,3 @@ export const cmpMenus = [
   }
 ]
 
-const showBusiness = location.pathname.split('/')?.[2] === 'all'
-
-// 对内文档开放业务组件
-if (envTarget === 'inner' || showBusiness) {
-  cmpMenus.splice(8, 0, {
-    'label': '业务组件',
-    'labelEn': 'Business Components',
-    'key': 'cmp-business-components',
-    'children': [
-      { 'nameCn': '金额', 'name': 'Amount', 'key': 'amount' },
-      { 'nameCn': '片区', 'name': 'Area', 'key': 'area' },
-      { 'nameCn': '公司', 'name': 'Company', 'key': 'company' },
-      { 'nameCn': '国家/地区', 'name': 'Country', 'key': 'country' },
-      { 'nameCn': '币种', 'name': 'Currency', 'key': 'currency' },
-      // { 'nameCn': '部门', 'name': 'Dept', 'key': 'dept' },
-      { 'nameCn': '下拉角色', 'name': 'DropRoles', 'key': 'drop-roles' },
-      { 'nameCn': '消息弹框', 'name': 'Espace', 'key': 'espace' },
-      { 'nameCn': '权签人', 'name': 'HrApprover', 'key': 'hrapprover' },
-      { 'nameCn': '语言选择', 'name': 'Locales', 'key': 'locales' },
-      { 'nameCn': '登录用户', 'name': 'LogonUser', 'key': 'logon-user' },
-      { 'nameCn': '注销', 'name': 'Logout', 'key': 'logout' },
-      { 'nameCn': '角色切换', 'name': 'Roles', 'key': 'roles' },
-      { 'nameCn': '用户', 'name': 'User', 'key': 'user' },
-      { 'nameCn': '用户账号', 'name': 'UserAccount', 'key': 'user-account' },
-      { 'nameCn': '用户信息链接', 'name': 'UserLink', 'key': 'user-link' }
-    ]
-  })
-}
