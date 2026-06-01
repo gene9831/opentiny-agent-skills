@@ -1,0 +1,15 @@
+{
+    "name": "@opentiny/agent-skills",
+    "version": "0.1.0",
+    "description": "Tiny Vue Skill",
+    "author": "OpenTiny",
+    "license": "MIT",
+    "bin": {
+        "agent-skills": "./index.mjs"
+    },
+    "files": [
+        "index.mjs",
+        "skills",
+        "scripts"
+    ]
+}
