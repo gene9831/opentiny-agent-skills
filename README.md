@@ -61,6 +61,19 @@ claude plugin install tiny-vue-skill@opentiny-skills
 
 <!-- available-agents:end -->
 
+### 方式四：使用 `npx` 命令安装（目前只支持下载tiny-vue-skill）
+
+```bash
+  npx --yes git+https://github.com/opentiny/agent-skills.git
+```
+>安装限制
+> ·`npx` 的方式依赖 `NodeJS`环境（推荐 `Node 22+` 以上 `LTS` 版本）
+>
+#### 安装后效果
+```bash
+  ~/.config/opencode/skills/tiny-vue-skill
+```
+
 > **IMPORTANT**: 不同的AI IDE/CLI， 对skill的配置可能不同，请严格参考其文档进行配置路径。
 
 > **IMPORTANT**: TinyVue组件也会定期升级，需要重新复制或重新执行 skills add 命令来更新Skill 。
@@ -168,3 +181,4 @@ skills/
 1. 在test目录中，新建一个vue工程，然后安装TinyVue组件，使用Grid组件开发一个中国省级信息查询的表格，要求有：序号，省名，人口，面积，GDP等信息，这些信息要支持排序的功能，省名的列要冻结在最左边。 表格的顶部有过滤查询省名的功能。
 
 2. 为当前TinyVue的工程增加深色模式的能力
+
