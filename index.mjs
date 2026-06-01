@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { cpSync, existsSync, mkdirSync, rmSync } from 'fs'
 import { dirname, join } from 'path'
 import { fileURLToPath } from 'url'
@@ -26,8 +27,6 @@ mkdirSync(targetBase, { recursive: true })
 if (existsSync(destDir)) {
   rmSync(destDir, { recursive: true, force: true })
   console.error(`删除skill目录: ${destDir}`)
-  
-
 }
 
 cpSync(sourceDir, destDir, { recursive: true })
