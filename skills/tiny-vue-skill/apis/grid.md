@@ -262,7 +262,8 @@
 | sortable | boolean | false | 设置该列数据是否可以排序 |
 | title | string \| (h, params)=> string \| VNode |  | 列标题（支持开启国际化），可以是函数 |
 | tree-node | boolean | false | 只对 tree-config 配置时有效，指定为树节点 |
-| type | 'index' \| 'selection' \| 'radio' \| 'expand' |  | 设置内置列的类型 |
+| type | 'index' \| 'selection' \| 'radio' \| 'expand' \| 'operation' | | 设置内置列的类型，其中operation属于多端属性，不是PC端属性 |
+| operation-config | 多端属性，指定操作列配置，不是PC端属性 |
 | width | number \| string |  | 设置列的宽度，可以是像素或者百分比或者 auto ，设置为 auto 时，列宽会自动适应；该属性的可选值为 整数 ， px ，% |
 
 ### Slots
