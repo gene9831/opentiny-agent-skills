@@ -4,7 +4,7 @@
 
 | 属性名 | 类型 | 默认值 | 说明 |
 |--------|------|--------|------|
-| append-to-body | boolean | false | drawer 本身是否插入到 body 上 |
+| append-to-body | boolean | false | drawer 本身是否插入到 body |
 | before-close | (type) => boolean |  | 弹窗关闭前的回调，返回 false 会阻止弹窗关闭 |
 | custom-class | String |  | 自定义 class 样式 |
 | destroy-on-close | boolean | false | 关闭时销毁抽屉内的元素，而非隐藏 |

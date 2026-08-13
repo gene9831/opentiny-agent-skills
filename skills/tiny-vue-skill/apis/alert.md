@@ -15,7 +15,7 @@
 | show-icon | boolean | true | 是否显示图标 |
 | show-title | boolean | true | 是否显示标题，在 size 为 large 时有效 |
 | single-line | string |  | 描述内容是否一行显示，超出显示...，默认值为 false。 |
-| size | 'normal' \| 'large' | 'normal' | 警告的尺寸大小 |
+| size | ISize | 'normal' | 警告的尺寸大小 |
 | title | string |  | 警告的标题，在 size 为 large 时有效，默认会根据 type 自动设置 |
 | type | IType | 'info' | 警告的类型 |
 
@@ -48,4 +48,10 @@
 
 ```typescript
 type IType = 'success' | 'warning' | 'info' | 'error' | 'simple'
+```
+
+### ISize
+
+```typescript
+type ISize = 'small' | 'medium' | 'normal' | 'large'
 ```

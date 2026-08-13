@@ -58,6 +58,7 @@
 | 综合搜索 | SearchBox | search-box |
 | 选择器 | Select | select |
 | 滑块 | Slider | slider |
+| 滑动按钮组 | SliderButton | slider-button |
 | 开关 | Switch | switch |
 | 时间选择器 | TimePicker | time-picker |
 | 时间选择 | TimeSelect | time-select |

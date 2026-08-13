@@ -10,7 +10,7 @@
 | form-validation | 表单校验、移除校验 | <p>通过 <code>rules</code> 设置校验规则，<br>          调用 <code>clearValidate</code> 方法移除表单项的校验结果。传入待移除的表单项的 <code>prop</code> 属性或者 <code>prop</code> 组成的数组，如不传则移除整个表单的校验结果，<br>          调用 <code>resetFields</code> 方法重置表单并移除校验结果<br>          </p> | form/form-validation.vue |
 | form-validate-field | 特定表单项校验 | <p>通过 <code>validateField</code> 方法对特定表单项进行校验， <code>clearValidate</code> 方法移除特定表单项校验， <code>resetField</code> 重置表单项并移除校验。</p> | form/form-validate-field.vue |
 | custom-validation-rule | 自定义校验规则 | <p>通过 <code>rules</code> 的 <code>validator</code> 选项进行自定义校验，校验方法中 <code>callback</code> 必须被调用。通过 <code>validate-on-rule-change</code> 设置是否在 <code>rules</code> 属性改变后立即触发一次验证。</p> | form/custom-validation-rule.vue |
-| custom-validation-string-length | 自定义字符串长度 | <p>通过 <code>rules</code> 的 <code>regular</code> 进行自定义字符串长度（3.28.0版本新增）</p> | form/custom-validation-string-length.vue |
+| custom-validation-string-length | 自定义字符串长度 | <p>通过 <code>rules</code> 的 <code>regular</code> 进行自定义字符串长度</p> | form/custom-validation-string-length.vue |
 | validation-position | 校验提示位置 | <p>通过 <code>validate-position</code> 可自定义错误提示出现的位置，在 <code>form</code> 组件上设置后，子组件 <code>form-item</code> 会继承父组件设置。单独在 <code>form-item</code> 组件上进行设置优先级高于在 <code>form</code> 上的设置。</p> | form/validation-position.vue |
 | novalid-tip | 隐藏表单项校验提示 | <p>通过 <code>show-message</code> 设置是否显示校错误提示信息。</p> | form/novalid-tip.vue |
 | validate-type | 校验提示的形式 | <p>通过 <code>validate-type</code> 设置校验提示信息是以 <code>text</code> 文本显示还是以 <code>tip</code> 提示框的形式显示，也可直接配置在某一个 <code>form-item</code> 上控制某一项的校验提示形式。</p> | form/validate-type.vue |

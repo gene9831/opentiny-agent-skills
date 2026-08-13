@@ -12,3 +12,4 @@
 | dynamic-disable | 禁用状态 | <p>通过 <code>disabled</code> 设置开关禁用状态。</p> | switch/dynamic-disable.vue |
 | custom-open-close-icon | 自定义开关图标 | <p>通过具名插槽 <code>active-icon</code> 和 <code>inactive-icon</code> 自定义开关图标。</p> | switch/custom-open-close-icon.vue |
 | event-change | 变更事件 | <p>当开关值变化后，会触发 <code>change</code> 事件。</p> | switch/event-change.vue |
+| display-only | 只读状态 | <p>通过 <code>display-only</code> 设置开关为只读状态。当设置 <code>display-only</code> 为 <code>true</code> 时，开关为只读状态，无法进行交互操作。</p> | switch/display-only.vue |

@@ -4,7 +4,7 @@
 
 | 属性名 | 类型 | 默认值 | 说明 |
 |--------|------|--------|------|
-| accept | string |  | 限制文件类型（thumbnail-mode 模式下此参数无效） |
+| accept | string |  | 限制文件类型（thumbnail-mode 模式下此参数无效）,支持<code> 后缀名（.pdf），MIME类型（image/png），MIME类型通配符（image/*）</code>, 多个格式以逗号分隔 |
 | action | string |  | 上传的地址，必填参数 |
 | auto-upload | boolean | true | 是否在选取文件后立即进行上传 |
 | before-add-file | (callback: () => void) => void |  | 文件选择之前的钩子，若返回 false 或者返回 Promise 且被 reject，则停止添加文件。如果不用以上 2 种方式，也可以通过执行参数中的回调函数继续进行上传【3.13.0版本新增】 |

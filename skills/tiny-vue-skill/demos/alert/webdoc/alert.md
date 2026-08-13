@@ -3,7 +3,7 @@
 | demoId | 名称 | 描述 | 代码文件 |
 |--------|------|------|----------|
 | basic-usage | 基本用法 | <p>通过 <code>description</code> 属性或者 <code>description</code> 插槽来设置提示内容。<br> 通过 <code>type</code> 属性，设置不同的类型。</p> | alert/basic-usage.vue |
-| size | 尺寸模式 | <br>          通过 <code>size</code> 设置不同的尺寸模式，可选值： <code>normal</code> 、<code>large</code> 。<br><br>          <div class="tip custom-block"><br>            <p class="custom-block-title"> 尺寸模式区别 </p><br>            <ul><br>              <li> normal 模式下，不会显示标题和交互操作的区域，相当于简单模式。</li> <br>              <li> large 模式下，显示全部元素，相当于完整模式。</li> <br>            </ul><br>          </div><br>         | alert/size.vue |
+| size | 尺寸模式 | <br>          通过 <code>size</code> 设置不同的尺寸模式，可选值： <code>small</code> 、<code>medium</code> 、<code>normal</code> 、<code>large</code> 。<br><br>          <div class="tip custom-block"><br>            <p class="custom-block-title"> 尺寸模式区别 </p><br>            <ul><br>              <li> <code>small</code> 、<code>medium</code> 、<code>normal</code> 模式下，不会显示标题和交互操作的区域，相当于简单模式。</li> <br>              <li> <code>large</code> 模式下，显示全部元素，相当于完整模式。</li> <br>            </ul><br>          </div><br>         | alert/size.vue |
 | title | 自定义标题 | 当 <code>size</code> 为 <code>large</code> 时，通过 <code>title </code>属性或 <code>title </code>插槽，可以自定义组件的标题 ，通过 <code> show-title </code>属性控制标题是否显示<br><br>           如果未自定义标题，会根据对应的 <code>type</code> 显示相应的默认标题。 | alert/title.vue |
 | center | 内容居中 | <p>通过 <code>center</code> 设置内容显示居中。</p> | alert/center.vue |
 | icon | 自定义警告图标 | 通过 <code>icon </code> 属性设置自定义图标，如果未自定义图标，默认会根据不同的 <code>type</code> 的值自动使用对应图标。 | alert/icon.vue |

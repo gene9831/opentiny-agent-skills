@@ -5,6 +5,7 @@
 | 属性名 | 类型 | 默认值 | 说明 |
 |--------|------|--------|------|
 | before-delete | (close: () => void) => void |  | 删除前回调函数 |
+| round | boolean |  | 是否设置圆角标签 |
 | closable | boolean | false | 是否可关闭 |
 | color | IColor \| string[] |  | 控制标签文本色和背景色，可使用 IColor 类型中的预设值，也可自定义值，若自定义值为字符串则只能设置标签的背景色；若为数组则第一个值设置背景色，第二个设置文本色；【注：3.15.0新增支持数组类型】 |
 | custom-class | string |  | 标签class |
@@ -55,5 +56,5 @@ type ISize = 'medium' | 'small' | ''
 ### IType
 
 ```typescript
-type IType = 'success' | 'info' | 'warning' | 'danger'
+type IType = 'success' | 'info' | 'warning' | 'danger' | 'alerting' | 'error'
 ```

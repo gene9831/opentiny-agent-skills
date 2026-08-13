@@ -16,6 +16,7 @@
 | width | number \| string |  | 定义开关的宽度 |
 | types | string |  | 展示开关不同的状态 |
 | v-model | string |  | <p>绑定值</p> |
+| display-only | boolean | false | 设置开关为只读状态 |
 
 ### Events
 
