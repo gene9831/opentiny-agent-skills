@@ -23,6 +23,44 @@
       "repository": "https://github.com/opentiny/tiny-vue",
       "tags": ["vue", "components", "ui"],
       "keywords": ["tinyvue", "vue3", "component-library"]
+    },
+    {
+      "name": "tiny-robot-skill",
+      "source": "./skills/tiny-robot-skill",
+      "description": "TinyRobot component library code generation and implementation guidance",
+      "version": "0.1.0",
+      "author": {
+        "name": "OpenTiny"
+      },
+      "license": "MIT",
+      "homepage": "https://opentiny.design/tiny-robot",
+      "repository": "https://github.com/opentiny/tiny-robot",
+      "tags": ["robot", "components", "ui"],
+      "keywords": ["tiny-robot", "component-library"]
+    },
+    {
+      "name": "webmcp-cli-skill",
+      "source": "./skills/webmcp-cli-skill",
+      "description": "面向第三方 AI Agent 的安装与执行指南：如何使用 webmcp-cli 与浏览器页面交互。包含已注入 WebMCP 工具的页面领域专用工具说明。",
+      "version": "1.2.0",
+      "author": {
+        "name": "OpenTiny"
+      },
+      "license": "MIT",
+      "tags": ["webmcp", "cli", "agent"],
+      "keywords": ["webmcp-cli", "agent", "browser"]
+    },
+    {
+      "name": "webmcp-sdk-skill",
+      "source": "./skills/webmcp-sdk-skill",
+      "description": "指导如何使用 WebMCP SDK库去开发WebAgent的技能包，将前端应用快速智能化。它包含 TinyRemoter，WebMcpServer，WebMcpClient，createRemoter， AI-Extension插件开发的文档及指南。",
+      "version": "1.0.0",
+      "author": {
+        "name": "OpenTiny"
+      },
+      "license": "MIT",
+      "tags": ["webmcp", "sdk", "agent"],
+      "keywords": ["webmcp-sdk", "agent", "frontend"]
     }
   ]
 }
