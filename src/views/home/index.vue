@@ -32,22 +32,6 @@
       </div>
     </div>
 
-    <div class="info-section">
-      <h3>使用指引</h3>
-      <div class="guide-box">
-        <p>本项目展示了如何将 <strong>webSkills</strong> 与 <strong>webMCP</strong> 集成到业务系统中：</p>
-        <ul>
-          <li><strong>左侧系统视图：</strong>标准的Vue + TinyVue业务系统，包含数据列表与操作。</li>
-          <li><strong>右侧 AI 助手：</strong>基于 TinyRobot 开发的终端，内置了电商相关的业务技能 (skills)。</li>
-        </ul>
-        <p><strong>💡 试试在右侧对AI说：</strong></p>
-        <div class="prompt-chips">
-          <span class="chip">"帮我添加100台iPhone 15到北京一号仓"</span>
-          <span class="chip">"顾客李四想申请订单ORD-123的价保50元，原因是百亿补贴变价了"</span>
-          <span class="chip">"请查询目前的库存情况"</span>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -143,48 +127,6 @@
 }
 .stat-trend.neutral {
   color: #86909c;
-}
-
-.info-section {
-  background: white;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
-}
-
-.info-section h3 {
-  margin: 0 0 16px 0;
-  font-size: 1.1rem;
-  color: #1d2129;
-}
-
-.guide-box {
-  background: #f7f8fc;
-  border-radius: 12px;
-  padding: 20px;
-  color: #4e5969;
-  line-height: 1.6;
-}
-
-.guide-box ul {
-  padding-left: 20px;
-  margin: 12px 0 20px 0;
-}
-
-.prompt-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 12px;
-}
-
-.chip {
-  background: #fff;
-  border: 1px solid #e5e6eb;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 0.9rem;
-  color: #3a78ec;
 }
 
 @keyframes fadeIn {

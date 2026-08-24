@@ -1,7 +1,6 @@
 <template>
   <div class="app-container">
-    <!-- Left App Content — 宽度动态computed -->
-    <div class="app-left" :style="{ width: show ? `calc(100% - ${rightWidth}px)` : '100%' }">
+    <div class="app-left">
       <header class="app-header">
         <div class="logo">
           <div class="logo-icon">
@@ -13,7 +12,7 @@
               <line x1="14" y1="12" x2="19" y2="17" stroke="white" stroke-width="1.4" opacity="0.7" />
             </svg>
           </div>
-          <h1>电商智能管理系统</h1>
+          <h1>电商管理系统</h1>
         </div>
         <div class="header-actions">
           <span class="user-greeting">欢迎，管理员</span>
@@ -72,110 +71,11 @@
       </div>
     </div>
 
-    <!-- 拖拽分隔条 — 仅 AI 面板显示时出现 -->
-    <div v-show="show" class="app-divider" @mousedown="startDrag">
-      <div class="divider-handle"></div>
-    </div>
-
-    <!-- Right AI Assistant — 宽度由 rightWidth 控制 -->
-    <div v-show="show" class="app-right" :style="{ width: rightWidth + 'px' }">
-      <tiny-remoter
-        class="remoter-pane"
-        :skills="skillMdModules"
-        v-model:show="show"
-        :mcpServers="mcpServers"
-        layoutMode="relative"
-        :menuItems="menuItems"
-        :systemPrompt="systemPrompt"
-        :promptItems="ecommercePromptItems"
-        :pillItems="ecommercePillItems"
-        @chat-stream-finish="onChatStreamFinish"
-      />
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { TinyRemoter } from '@opentiny/next-remoter'
-import type { McpServerConfig } from '@opentiny/next-sdk'
-import { onMounted, ref, h } from 'vue'
-import { createMcpServer, useWebAgentServer } from './mcp-servers'
 import { iconDesktopView, iconBoxSolid, iconLock, iconLineChart, iconCoin, iconShoppingCard } from '@opentiny/vue-icon'
-import { AGENT_ROOT } from './const'
-
-// 电商管理平台：欢迎区建议卡片（上方大卡片）
-const ecommercePromptItems = [
-  {
-    label: '订单与物流',
-    description: '需要查订单状态、物流信息，还是根据客户姓名找订单？',
-    icon: h('span', { style: { fontSize: '18px' } }, '📦'),
-    badge: 'NEW'
-  },
-  {
-    label: '价保与售后',
-    description: '要创建价保申请、补差价，还是查看价保单审核状态？',
-    icon: h('span', { style: { fontSize: '18px' } }, '🛡️')
-  },
-  {
-    label: '库存与销售',
-    description: '需要商品入库、查销售趋势，还是看财务对账？',
-    icon: h('span', { style: { fontSize: '18px' } }, '📊')
-  }
-]
-
-// 电商管理平台：输入框上方快捷操作按钮（小药丸按钮 + 下拉菜单）
-const ecommercePillItems = [
-  {
-    id: 'orders',
-    text: '订单物流',
-    menus: [
-      { id: 0, text: '查订单状态', inputMessage: '帮我查一下订单 ORD-5X9A2B 的当前状态和物流信息。' },
-      { id: 1, text: '按客户查单', inputMessage: '请根据客户姓名「张三」查询他的订单列表。' }
-    ]
-  },
-  {
-    id: 'price-protection',
-    text: '价保售后',
-    menus: [
-      {
-        id: 0,
-        text: '创建价保',
-        inputMessage: '帮我给用户王五创建一个价保申请单，金额 1000 元，原因为百亿补贴。'
-      },
-      { id: 1, text: '查价保单', inputMessage: '帮我查看当前待审核的价保申请列表。' }
-    ]
-  },
-  {
-    id: 'inventory-sales',
-    text: '库存与销售',
-    menus: [
-      { id: 0, text: '商品入库', inputMessage: '请把 200 台 MacBook Pro 入库到上海二号仓。' },
-      { id: 1, text: '销售趋势', inputMessage: '帮我看看最近 30 天的商品销售趋势。' },
-      { id: 2, text: '财务对账', inputMessage: '打开财务管理看板，看一下本月支出和可用余额。' }
-    ]
-  }
-]
-
-const show = ref(true)
-const systemPrompt = `你是「电商智能管理系统」的内置助理，必须严格遵守以下工具调用规则：
-
-1）这是一个采用 WebMCP 架构的项目：
-- 工具是随页面路由「动态加载和卸载」的。这意味着如果你在当前工具列表中没有看到某个功能（例如库存管理工具 add_inventory），说明你当前可能不在对应的页面。
-- 当你需要调用某个功能但发现对应工具缺失时，你应该先使用 navigate_to_page 工具跳转到对应的路由（例如：库存 -> /inventory，订单 -> /orders，价保 -> /price-protection，财务 -> /finance），跳转成功后，对应的工具会自动出现在你的工具列表中。
-
-2）技能文档优先：
-- 在调用任何业务工具（如下单、价保、库存等）之前，必须先调用 get_skill_content 工具读取对应 skill 技能文档。
-- 只有在「确认已经阅读并理解技能文档」之后，才允许继续调用后续业务工具。
-
-3）只调用已提供的工具，禁止“猜名字”：
-- 你只能从当前上下文中「明确列出的 MCP 工具列表」中选择工具名称，必须一字不差地使用列表里的名称。
-- 绝对禁止凭空发明或猜测新的工具名。
-- 如果在跳转到对应路由后仍找不到该工具，请告知用户该功能可能尚未实现。
-
-4）处理“工具不存在”错误的方式：
-- 如果工具调用返回「工具不存在」等类似错误，且你已确认路径正确，请向用户清晰说明情况，并建议由开发者维护。
-
-请始终记住：你是一个具备「导航意识」的 AI 助理，通过页面跳转来获取环境所需的 MCP 工具能力。`
 
 const IconDesktopView = iconDesktopView()
 const IconBoxSolid = iconBoxSolid()
@@ -183,98 +83,6 @@ const IconLock = iconLock()
 const IconLineChart = iconLineChart()
 const IconCoin = iconCoin()
 const IconShoppingCard = iconShoppingCard()
-
-// ── 拖拽调整宽度 ──────────────────────────────────────────────
-const STORAGE_KEY = 'ai-panel-width'
-const DEFAULT_WIDTH = 380
-const MIN_WIDTH = 240
-const MAX_WIDTH = 720
-
-// 从 localStorage 恢复上一次宽度，否则使用默认值
-const savedWidth = parseInt(localStorage.getItem(STORAGE_KEY) ?? '', 10)
-const rightWidth = ref(isNaN(savedWidth) ? DEFAULT_WIDTH : savedWidth)
-
-const startDrag = (e: MouseEvent) => {
-  e.preventDefault()
-  const startX = e.clientX
-  const startWidth = rightWidth.value
-
-  const onMove = (ev: MouseEvent) => {
-    // 向左拖 → 右侧变宽；向右拖 → 右侧变窄
-    const delta = startX - ev.clientX
-    const newWidth = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, startWidth + delta))
-    rightWidth.value = newWidth
-  }
-
-  const onUp = () => {
-    localStorage.setItem(STORAGE_KEY, String(rightWidth.value))
-    window.removeEventListener('mousemove', onMove)
-    window.removeEventListener('mouseup', onUp)
-    document.body.style.cursor = ''
-    document.body.style.userSelect = ''
-  }
-
-  document.body.style.cursor = 'col-resize'
-  document.body.style.userSelect = 'none'
-  window.addEventListener('mousemove', onMove)
-  window.addEventListener('mouseup', onUp)
-}
-// ─────────────────────────────────────────────────────────────
-
-const skillMdModules = import.meta.glob('./skills/**/*.md', {
-  query: '?raw',
-  import: 'default',
-  eager: false
-}) as Record<string, string | (() => Promise<string>)>
-
-// Setup MCP Servers
-const doc = document as Document & { modelContext?: object }
-const mcpServers: Record<string, McpServerConfig> = {
-  'mcp-server-builtin-webmcp': {
-    type: 'builtin' as const,
-    client: doc.modelContext,
-    name: '浏览器内置工具',
-    description: '通过 document.modelContext 暴露的浏览器原生 MCP 工具'
-  }
-}
-
-const menuItems = ref<any[]>([])
-
-const onChatStreamFinish = () => {
-  window.dispatchEvent(new CustomEvent('page-agent-chat-end'))
-}
-
-onMounted(async () => {
-  // 本地 MCP Server 启动：失败则直接抛出（核心功能）
-  await createMcpServer()
-
-  // 远程 WebAgent 初始化：失败时只打印警告，不影响本地功能
-  try {
-    const result = await useWebAgentServer()
-    if (result?.sessionId) {
-      const remoteUrl = `${AGENT_ROOT}/mcp?sessionId=${result.sessionId}`
-      menuItems.value = [
-        {
-          action: 'remote-url',
-          text: '遥控器链接',
-          desc: remoteUrl,
-          tip: remoteUrl,
-          active: true,
-          showCopyIcon: true
-        },
-        {
-          action: 'remote-control',
-          text: '识别码',
-          desc: result.sessionId.slice(-6),
-          know: true,
-          showCopyIcon: true
-        }
-      ]
-    }
-  } catch (err) {
-    console.warn('[WebAgent] 远程遥控初始化失败，本地功能不受影响：', err)
-  }
-})
 </script>
 
 <style scoped>
@@ -299,56 +107,11 @@ onMounted(async () => {
 
 /* Left part — 宽度由 inline style 动态控制 */
 .app-left {
-  flex-shrink: 0;
+  width: 100%;
   display: flex;
   flex-direction: column;
   height: 100%;
   min-width: 0;
-  transition: width 0.15s ease;
-}
-
-/* 拖拽分隔条 */
-.app-divider {
-  width: 5px;
-  height: 100%;
-  background: transparent;
-  cursor: col-resize;
-  flex-shrink: 0;
-  position: relative;
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.app-divider:hover .divider-handle,
-.app-divider:active .divider-handle {
-  background: #6366f1;
-  opacity: 1;
-}
-.divider-handle {
-  width: 3px;
-  height: 40px;
-  border-radius: 2px;
-  background: #c7d2fe;
-  opacity: 0.6;
-  transition: all 0.18s;
-}
-
-/* Right part — 宽度由 inline style 动态控制 */
-.app-right {
-  flex-shrink: 0;
-  height: 100%;
-  border-left: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.02);
-  z-index: 10;
-  min-width: 0;
-}
-
-.remoter-pane {
-  height: 100%;
-  width: 100%;
-  border-radius: 0;
-  box-shadow: none;
 }
 
 /* Premium Header */

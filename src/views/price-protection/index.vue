@@ -43,7 +43,7 @@
       </tiny-grid>
     </div>
 
-    <!-- 客户申请审批核对弹窗（AI 调用 / 手动新增共用） -->
+    <!-- 新增价保申请弹窗 -->
     <PriceProtectionModal ref="modalRef" />
 
     <!-- 审批确认对话框 -->
@@ -80,7 +80,7 @@
 
 <script setup lang="ts">
 import { priceProtectionList, type PriceProtectionOrder } from '../../mock'
-import { ref, reactive, onMounted, onUnmounted } from 'vue'
+import { ref, reactive } from 'vue'
 import PriceProtectionModal from '../../components/PriceProtectionModal.vue'
 
 const modalRef = ref()
@@ -91,7 +91,6 @@ const statusLabel: Record<string, string> = {
   Rejected: '已拒绝'
 }
 
-// 手动点击按钮新增价保申请（与 AI 调用共用同一个弹窗）
 const handleManualAdd = () => {
   modalRef.value?.openModal({ customerName: '', orderId: '', amount: 0, reason: '' })
 }
@@ -137,159 +136,6 @@ const confirmReview = () => {
   reviewDialog.visible = false
 }
 
-const PRICE_PROTECTION_QUERY_TOOL = 'price-protection-query'
-const PRICE_PROTECTION_REVIEW_TOOL = 'price-protection-review'
-const PRICE_PROTECTION_DETAIL_TOOL = 'price-protection-detail'
-const ADD_PRICE_PROTECTION_TOOL = 'add_price_protection'
-const abortController = new AbortController()
-
-onMounted(() => {
-  const modelContext = (document as any).modelContext
-  if (modelContext?.registerTool) {
-    modelContext.registerTool(
-    {
-    name: PRICE_PROTECTION_QUERY_TOOL,
-    description: '查询商品价保申请列表，可按状态筛选（pending/approved/rejected/expired），不传 status 则返回全部',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        status: {
-          type: 'string',
-          enum: ['pending', 'approved', 'rejected', 'expired'],
-          description: '申请状态，不传则查询全部'
-        }
-      }
-    },
-    execute: async ({ status }: { status?: string }) => {
-      const list = status
-        ? priceProtectionList.value.filter((o) => o.status.toLowerCase() === status.toLowerCase())
-        : priceProtectionList.value
-      const text = `查询到 ${list.length} 条价保申请：\n${JSON.stringify(list, null, 2)}`
-      return { content: [{ type: 'text', text }] }
-    }
-  },
-  { signal: abortController.signal }
-  )
-
-  modelContext.registerTool(
-    {
-    name: PRICE_PROTECTION_REVIEW_TOOL,
-    description: '对待审核的价保申请进行审批，支持通过（approve）或拒绝（reject），可附加备注',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        id: {
-          type: 'string',
-          pattern: '^PP-\\d{8}-\\d{2}$',
-          description: '价保申请 ID'
-        },
-        action: {
-          type: 'string',
-          enum: ['approve', 'reject'],
-          description: '审批动作：approve=通过，reject=拒绝'
-        },
-        remark: { type: 'string', description: '审批备注（可选）' }
-      },
-      required: ['id', 'action']
-    },
-    execute: async ({
-      id,
-      action,
-      remark
-    }: {
-      id: string | number
-      action: 'approve' | 'reject'
-      remark?: string
-    }) => {
-      const order = priceProtectionList.value.find((o) => o.id === String(id))
-      if (!order) {
-        return { content: [{ type: 'text', text: `未找到 ID 为 ${id} 的价保申请。` }] }
-      }
-      if (order.status !== 'Pending') {
-        return { content: [{ type: 'text', text: `申请单状态为「${order.status}」，无法重复审核。` }] }
-      }
-      order.status = action === 'approve' ? 'Approved' : 'Rejected'
-      if (remark) {
-        order.remark = remark
-      }
-      const remarkText = remark ? `，备注：${remark}` : ''
-      return {
-        content: [{ type: 'text', text: `价保申请 ${order.id} 已${action === 'approve' ? '通过' : '拒绝'}${remarkText}。` }]
-      }
-    }
-  },
-  { signal: abortController.signal }
-  )
-
-  modelContext.registerTool(
-    {
-    name: PRICE_PROTECTION_DETAIL_TOOL,
-    description: '根据申请 ID 获取单条价保申请的完整详情',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        id: {
-          type: 'string',
-          pattern: '^PP-\\d{8}-\\d{2}$',
-          description: '价保申请 ID'
-        }
-      },
-      required: ['id']
-    },
-    execute: async ({ id }: { id: string | number }) => {
-      const order = priceProtectionList.value.find((o) => o.id === String(id))
-      const text = order ? `价保申请详情：\n${JSON.stringify(order, null, 2)}` : `未找到 ID 为 ${id} 的价保申请。`
-      return { content: [{ type: 'text', text }] }
-    }
-  },
-  { signal: abortController.signal }
-  )
-
-  modelContext.registerTool(
-    {
-    name: ADD_PRICE_PROTECTION_TOOL,
-    description:
-      '【价保监控工具】帮助电商管理员处理顾客因降价提出的补差价请求（价保申请）。注意：在调用本工具前，你必须先使用 get_skill_content 工具读取相关的技能文档，严禁凭空构造参数或跳过业务规则直接调用。',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        isSkillRead: {
-          type: 'boolean',
-          description: '是否已经通过 get_skill_content 读取过技能文档？必须阅读文档后才允许传 true。如果你还没有阅读文档，严禁调用此工具。'
-        },
-        customerName: { type: 'string', description: '提出价保申请的顾客姓名' },
-        orderId: { type: 'string', description: '需要价保补偿的原订单编号' },
-        amount: { type: 'number', description: '申请补偿的差价金额' },
-        reason: { type: 'string', description: '顾客申请价保的原因' }
-      },
-      required: ['isSkillRead', 'customerName', 'orderId', 'amount', 'reason']
-    },
-    execute: async (params: any) => {
-      if (!params.isSkillRead) {
-        return {
-          content: [
-            {
-              type: 'text',
-              text: '错误：在调用此工具前，你必须先使用 get_skill_content 读取相关技能文档。请先阅读技能文档后再重新调用。'
-            }
-          ]
-        }
-      }
-      if (!modalRef.value) {
-        return { content: [{ type: 'text', text: '错误：价保弹窗未加载，当前页面可能已被销毁。' }] }
-      }
-      const result = await modalRef.value.openModal(params)
-      return { content: [{ type: 'text', text: result }] }
-    }
-  },
-  { signal: abortController.signal }
-  )
-  }
-})
-
-onUnmounted(() => {
-  abortController.abort()
-})
 </script>
 
 <style scoped>

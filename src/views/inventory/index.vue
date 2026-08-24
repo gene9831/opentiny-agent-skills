@@ -3,7 +3,7 @@
     <div class="page-header">
       <div class="header-left">
         <h2>库存管理</h2>
-        <p class="subtitle">管理商品库存，支持 AI 辅助快速建仓与数量更新</p>
+        <p class="subtitle">管理商品库存与入库记录</p>
       </div>
       <div class="header-right">
         <button class="btn-add" @click="handleManualAdd">＋ 手动新增入库</button>
@@ -40,53 +40,14 @@
 
 <script setup lang="ts">
 import { inventoryList } from '../../mock'
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref } from 'vue'
 import InventoryModal from '../../components/InventoryModal.vue'
 
 const modalRef = ref()
-const abortController = new AbortController()
 
 const handleManualAdd = () => {
-  // 唤起表单但使用空数据
-  modalRef.value.openModal({ productName: '', quantity: 1, warehouse: '' }).then((res: string) => {
-    console.log(res)
-  })
+  modalRef.value?.openModal({ productName: '', quantity: 1, warehouse: '北京一号仓' })
 }
-
-const ADD_INVENTORY_TOOL = 'add_inventory'
-
-onMounted(() => {
-  const modelContext = (document as any).modelContext
-  if (modelContext?.registerTool) {
-    modelContext.registerTool(
-      {
-        name: ADD_INVENTORY_TOOL,
-        description: '【入库管理工具】帮助电商管理员将采购的商品新增入库存系统中',
-        inputSchema: {
-          type: 'object',
-          properties: {
-            productName: { type: 'string', description: '商品名称或型号，如：iPhone 15 Pro Max' },
-            quantity: { type: 'number', description: '要入库的数量，必须大于0' },
-            warehouse: { type: 'string', description: '入库存放的仓库名称，如：北京一号仓' }
-          },
-          required: ['productName', 'quantity', 'warehouse']
-        },
-        execute: async (params: any) => {
-          if (!modalRef.value) {
-            return { content: [{ type: 'text', text: '错误：入库弹窗未加载，当前页面可能已被销毁。' }] }
-          }
-          const result = await modalRef.value.openModal(params)
-          return { content: [{ type: 'text', text: result }] }
-        }
-      },
-      { signal: abortController.signal }
-    )
-  }
-})
-
-onUnmounted(() => {
-  abortController.abort()
-})
 </script>
 
 <style scoped>

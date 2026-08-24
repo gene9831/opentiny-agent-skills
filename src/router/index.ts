@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
-  // 使用 Vite 的 BASE_URL，兼容 base: '/ai-vue/' 部署路径
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {

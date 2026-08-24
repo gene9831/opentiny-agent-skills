@@ -12,8 +12,7 @@
     "resolveJsonModule": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "types": [
-      "node",
-      "@mcp-b/webmcp-types"
+      "node"
     ],
     "paths": {
       "@/*": [

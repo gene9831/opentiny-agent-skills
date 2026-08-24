@@ -87,7 +87,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed } from 'vue'
 import { TinyHuichartsLine as TinyChartLine, TinyHuichartsPie as TinyChartPie } from '@opentiny/vue-huicharts'
 
 const activeRange = ref('30days')
@@ -189,48 +189,6 @@ const topProducts = [
   { name: 'HUAWEI Mate 60 Pro 512G', category: '手机数码', qty: 104, revenue: 8319, ratio: 7, color: '#f59e0b' }
 ]
 
-// 按时间范围的模拟销售摘要数据
-const salesSummary = {
-  '7days': { totalSales: 28400, orders: 312, returnRate: '1.8%' },
-  '30days': { totalSales: 128450, orders: 1342, returnRate: '2.4%' },
-  year: { totalSales: 1542600, orders: 16080, returnRate: '2.1%' }
-}
-
-const SALES_RECORD_QUERY_TOOL = 'sales_record_query'
-const abortController = new AbortController()
-onMounted(() => {
-  const modelContext = (document as any).modelContext
-  if (modelContext?.registerTool) {
-    modelContext.registerTool(
-      {
-        name: SALES_RECORD_QUERY_TOOL,
-      description: '【销售数据展示工具】帮助管理员查询最近一段时间的商品销售趋势、统计图表数据',
-      inputSchema: {
-        type: 'object',
-        properties: {
-          timeRange: {
-            type: 'string',
-            enum: ['7days', '30days', 'year'],
-            description: '查询时间范围'
-          }
-        }
-      },
-      execute: async ({ timeRange }: { timeRange?: '7days' | '30days' | 'year' }) => {
-        const range = timeRange ?? '30days'
-        activeRange.value = range
-        const s = salesSummary[range]
-        const label = range === '7days' ? '近7天' : range === '30days' ? '近30天' : '过去一年'
-        const text = `${label}销售数据：\n- 总销售额：¥${s.totalSales.toLocaleString()}\n- 总订单数：${s.orders}\n- 退货率：${s.returnRate}\n\n详细图表已更新，可在左侧查看。`
-        return { content: [{ type: 'text', text }] }
-      }
-    },
-    { signal: abortController.signal }
-  )
-  }
-})
-onUnmounted(() => {
-  abortController.abort()
-})
 </script>
 
 <style scoped>

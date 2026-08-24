@@ -1,41 +1,12 @@
 <template>
   <tiny-dialog-box
     v-model:visible="visible"
-    title="价保申请审核"
+    title="新增价保申请"
     width="520px"
     :modal-append-to-body="true"
     :close-on-click-modal="false"
     custom-class="pp-dialog"
-    @close="handleClose"
   >
-    <!-- AI Banner -->
-    <div class="ai-banner">
-      <div class="ai-avatar">
-        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
-          <circle cx="20" cy="20" r="20" fill="url(#grad)" />
-          <!-- Brain / Circuit nodes -->
-          <circle cx="20" cy="14" r="2.5" fill="white" opacity="0.9" />
-          <circle cx="13" cy="23" r="2" fill="white" opacity="0.9" />
-          <circle cx="27" cy="23" r="2" fill="white" opacity="0.9" />
-          <circle cx="20" cy="28" r="1.8" fill="white" opacity="0.7" />
-          <line x1="20" y1="16.5" x2="13.8" y2="21.2" stroke="white" stroke-width="1.2" opacity="0.6" />
-          <line x1="20" y1="16.5" x2="26.2" y2="21.2" stroke="white" stroke-width="1.2" opacity="0.6" />
-          <line x1="14.8" y1="24.4" x2="19" y2="27" stroke="white" stroke-width="1.2" opacity="0.6" />
-          <line x1="25.2" y1="24.4" x2="21" y2="27" stroke="white" stroke-width="1.2" opacity="0.6" />
-          <defs>
-            <linearGradient id="grad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-              <stop stop-color="#6366f1" />
-              <stop offset="1" stop-color="#3b82f6" />
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
-      <div class="ai-text">
-        <div class="ai-label">AI 业务助手</div>
-        <div class="ai-desc">已捕获客户价保诉求，请核实并确认以下信息后提交审批。</div>
-      </div>
-    </div>
-
     <!-- Form -->
     <tiny-form :model="formData" label-width="100px" class="pp-form">
       <tiny-form-item label="客户姓名">
@@ -61,9 +32,9 @@
 
     <template #footer>
       <div class="dialog-footer">
-        <tiny-button class="btn-cancel" @click="handleCancel">驳回申请</tiny-button>
+        <tiny-button class="btn-cancel" @click="handleCancel">取消</tiny-button>
         <tiny-button class="btn-confirm" @click="handleConfirm">
-          <span class="btn-icon">✓</span> 审核通过并建单
+          <span class="btn-icon">✓</span> 提交申请
         </tiny-button>
       </div>
     </template>
@@ -77,12 +48,7 @@ import { addPriceProtectionOrder } from '../mock'
 const visible = ref(false)
 const formData = ref({ customerName: '', orderId: '', amount: 0, reason: '' })
 
-let currentResolve: ((result: string) => void) | null = null
-
 const openModal = (params: { customerName: string; orderId: string; amount: number; reason: string }) => {
-  if (currentResolve) {
-    currentResolve('❌ 用户发起了新的操作，前置价保申请已取消。')
-  }
   formData.value = {
     customerName: params.customerName || '',
     orderId: params.orderId || '',
@@ -90,9 +56,6 @@ const openModal = (params: { customerName: string; orderId: string; amount: numb
     reason: params.reason || ''
   }
   visible.value = true
-  return new Promise<string>((resolve) => {
-    currentResolve = resolve
-  })
 }
 
 const handleConfirm = () => {
@@ -118,24 +81,11 @@ const handleConfirm = () => {
     amount: formData.value.amount,
     reason: formData.value.reason
   })
-  currentResolve?.(
-    `价保单已建立：订单 ${formData.value.orderId}，补偿 ¥${formData.value.amount}，客户：${formData.value.customerName}。`
-  )
   visible.value = false
-  currentResolve = null
 }
 
 const handleCancel = () => {
-  currentResolve?.('已驳回该笔价保申请。')
   visible.value = false
-  currentResolve = null
-}
-
-const handleClose = () => {
-  if (currentResolve) {
-    currentResolve('❌ 对话框已关闭，操作取消。')
-    currentResolve = null
-  }
 }
 
 defineExpose({ openModal })
@@ -166,41 +116,6 @@ defineExpose({ openModal })
 </style>
 
 <style scoped>
-/* AI Banner */
-.ai-banner {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.07) 0%, rgba(59, 130, 246, 0.04) 100%);
-  border-left: 3px solid #6366f1;
-  padding: 16px 20px;
-  margin: 0 0 4px;
-}
-.ai-avatar {
-  flex-shrink: 0;
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
-}
-.ai-avatar svg {
-  display: block;
-}
-.ai-label {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #6366f1;
-  letter-spacing: 0.03em;
-  margin-bottom: 4px;
-  text-transform: uppercase;
-}
-.ai-desc {
-  font-size: 0.9rem;
-  color: #374151;
-  line-height: 1.5;
-}
-
 /* Form */
 .pp-form {
   padding: 20px 24px 8px;

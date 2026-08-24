@@ -1,5 +1,5 @@
 {
-  "name": "doc-ai",
+  "name": "ecommerce-admin",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,36 +9,21 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@types/markdown-it": "catalog:",
-    "@opentiny/next-remoter": "workspace:*",
-    "@opentiny/next-sdk": "workspace:*",
-    "@opentiny/vue": "catalog:",
-    "@opentiny/vue-huicharts": "catalog:",
-    "@opentiny/vue-icon": "catalog:",
-    "markdown-it": "catalog:",
-    "unocss": "catalog:",
-    "vue": "catalog:",
-    "vant": "catalog:",
-    "vue-router": "catalog:",
-    "crypto-js": "catalog:",
-    "vue-i18n": "catalog:"
+    "@opentiny/vue": "^3.27.0",
+    "@opentiny/vue-huicharts": "^3.27.0",
+    "@opentiny/vue-icon": "^3.27.0",
+    "vue": "^3.5.22",
+    "vue-router": "^4.5.1"
   },
   "devDependencies": {
-    "@types/node": "catalog:",
-    "@vitejs/plugin-vue": "catalog:",
-    "@vitejs/plugin-vue-jsx": "catalog:",
-    "@vant/auto-import-resolver": "catalog:",
-    "@vue/tsconfig": "catalog:",
-    "@mcp-b/webmcp-types": "catalog:",
-    "dotenv": "catalog:",
-    "dotenv-cli": "catalog:",
-    "typescript": "catalog:",
-    "@opentiny/unplugin-tiny-vue": "catalog:",
-    "unplugin-auto-import": "catalog:",
-    "unplugin-vue-components": "catalog:",
-    "vite": "catalog:",
-    "vite-svg-loader": "catalog:",
-    "vue-tsc": "catalog:",
-    "less": "catalog:"
+    "@types/node": "^24.6.0",
+    "@vitejs/plugin-vue": "^6.0.1",
+    "@vue/tsconfig": "^0.8.1",
+    "typescript": "~5.9.3",
+    "@opentiny/unplugin-tiny-vue": "^1.0.0",
+    "unplugin-auto-import": "^0.18.3",
+    "unplugin-vue-components": "^0.26.0",
+    "vite": "^7.1.7",
+    "vue-tsc": "^3.1.0"
   }
 }
