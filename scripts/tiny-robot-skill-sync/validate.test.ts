@@ -64,9 +64,39 @@ async function createFixture() {
   )
   await write(skillRoot, '.claude-plugin/plugin.json', '{"name":"tiny-robot-skill","version":"1.0.0"}\n')
   await write(
+    skillRoot,
+    'agents/openai.yaml',
+    [
+      'interface:',
+      '  display_name: "TinyRobot Application Development"',
+      '  short_description: "Build TinyRobot 1.0 applications with the right layer"',
+      '  default_prompt: "Use $tiny-robot-skill to select and implement the appropriate TinyRobot 1.0 layer."',
+      '',
+    ].join('\n'),
+  )
+  await write(
     root,
     '.claude-plugin/marketplace.json',
     '{"plugins":[{"name":"tiny-robot-skill","source":"./skills/tiny-robot-skill","version":"1.0.0"}]}\n',
+  )
+  await write(
+    root,
+    '.github/workflows/sync-tinyrobot-docs.yml',
+    [
+      'on:',
+      '  workflow_dispatch:',
+      '    inputs:',
+      '      source_ref:',
+      '        default: release/v1.0.x',
+      'steps:',
+      '  - uses: actions/checkout@v4',
+      '    with:',
+      '      ref: ${{ inputs.source_ref }}',
+      '  - run: pnpm install --frozen-lockfile',
+      '  - run: pnpm tiny-robot-skill-sync --source-ref "${{ inputs.source_ref }}" --source-commit "${{ steps.tinyrobot.outputs.commit }}"',
+      '  - run: pnpm validate:tiny-robot-skill',
+      '',
+    ].join('\n'),
   )
 
   return { root, skillRoot, marketplacePath, index }
@@ -143,4 +173,17 @@ test('reports inconsistent skill, plugin, and marketplace versions only in full 
   assert.deepEqual(await validateTinyRobotSkill({ skillRoot, marketplacePath, scope: 'snapshot' }), [])
   const issues = await validateTinyRobotSkill({ skillRoot, marketplacePath, scope: 'full' })
   assert.deepEqual(issues.map((issue) => issue.code), ['version-mismatch'])
+})
+
+test('reports missing OpenAI application metadata and an unsafe sync workflow contract', async () => {
+  const { root, skillRoot, marketplacePath } = await createFixture()
+  await write(skillRoot, 'agents/openai.yaml', 'interface:\n  display_name: "TinyRobot"\n')
+  await write(
+    root,
+    '.github/workflows/sync-tinyrobot-docs.yml',
+    'on: workflow_dispatch\nsteps:\n  - run: cp -r tinyrobot-repo/docs skills/tiny-robot-skill\n',
+  )
+
+  const issues = await validateTinyRobotSkill({ skillRoot, marketplacePath, scope: 'full' })
+  assert.deepEqual(issues.map((issue) => issue.code), ['invalid-openai-metadata', 'invalid-sync-workflow'])
 })

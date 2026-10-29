@@ -114,6 +114,62 @@ async function validateVersions(skillRoot: string, marketplacePath: string) {
   ]
 }
 
+async function validateOpenAiMetadata(skillRoot: string) {
+  const metadataPath = path.join(skillRoot, 'agents/openai.yaml')
+  if (!(await exists(metadataPath))) {
+    return [issue('invalid-openai-metadata', 'agents/openai.yaml is missing', 'agents/openai.yaml')]
+  }
+  const content = await readFile(metadataPath, 'utf8')
+  const displayName = content.match(/^\s{2}display_name:\s*"([^"]+)"\s*$/m)?.[1]
+  const shortDescription = content.match(/^\s{2}short_description:\s*"([^"]+)"\s*$/m)?.[1]
+  const defaultPrompt = content.match(/^\s{2}default_prompt:\s*"([^"]+)"\s*$/m)?.[1]
+  const valid =
+    displayName === 'TinyRobot Application Development' &&
+    !!shortDescription &&
+    shortDescription.length >= 25 &&
+    shortDescription.length <= 64 &&
+    !!defaultPrompt?.includes('$tiny-robot-skill') &&
+    defaultPrompt.includes('TinyRobot 1.0')
+  return valid
+    ? []
+    : [
+        issue(
+          'invalid-openai-metadata',
+          'OpenAI metadata must name TinyRobot application development and provide a 25-64 character description plus a $tiny-robot-skill TinyRobot 1.0 prompt',
+          'agents/openai.yaml',
+        ),
+      ]
+}
+
+async function validateSyncWorkflow(marketplacePath: string) {
+  const repositoryRoot = path.dirname(path.dirname(path.resolve(marketplacePath)))
+  const workflowPath = path.join(repositoryRoot, '.github/workflows/sync-tinyrobot-docs.yml')
+  if (!(await exists(workflowPath))) {
+    return [issue('invalid-sync-workflow', 'TinyRobot sync workflow is missing', '.github/workflows/sync-tinyrobot-docs.yml')]
+  }
+  const content = await readFile(workflowPath, 'utf8')
+  const syncOffset = content.indexOf('tiny-robot-skill-sync')
+  const validateOffset = content.indexOf('validate:tiny-robot-skill')
+  const valid =
+    /source_ref:[\s\S]*?default:\s*['"]?release\/v1\.0\.x['"]?/.test(content) &&
+    /ref:\s*\$\{\{\s*(?:inputs|github\.event\.inputs)\.source_ref\s*\}\}/.test(content) &&
+    /pnpm (?:install|i) --frozen-lockfile/.test(content) &&
+    syncOffset >= 0 &&
+    /--source-ref\s+["']?\$\{\{[^\n]*source_ref[^\n]*\}\}["']?/.test(content) &&
+    /--source-commit\s+["']?\$\{\{[^\n]+\}\}["']?/.test(content) &&
+    validateOffset > syncOffset &&
+    !content.includes('rm -rf current-repo/skills/tiny-robot-skill')
+  return valid
+    ? []
+    : [
+        issue(
+          'invalid-sync-workflow',
+          'Sync workflow must check out source_ref, install from the lockfile, pass ref and commit to the generator, then validate without destructive folder copies',
+          '.github/workflows/sync-tinyrobot-docs.yml',
+        ),
+      ]
+}
+
 export async function validateTinyRobotSkill(options: ValidateOptions): Promise<ValidationIssue[]> {
   const skillRoot = path.resolve(options.skillRoot)
   const index = JSON.parse(await readFile(path.join(skillRoot, 'component-index.json'), 'utf8')) as TinyRobotIndex
@@ -162,6 +218,8 @@ export async function validateTinyRobotSkill(options: ValidateOptions): Promise<
 
   if ((options.scope ?? 'full') === 'full') {
     issues.push(...(await validateVersions(skillRoot, path.resolve(options.marketplacePath))))
+    issues.push(...(await validateOpenAiMetadata(skillRoot)))
+    issues.push(...(await validateSyncWorkflow(options.marketplacePath)))
   }
   return issues
 }
