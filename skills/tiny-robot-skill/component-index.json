@@ -23,7 +23,15 @@
       ],
       "doc": "references/docs/best-practices/extension-manager-integration.md",
       "demos": [
-        "examples/demos/best-practices/extension-manager-integration/integrated.vue"
+        "examples/demos/best-practices/extension-manager-integration/ExtensionAddIcon.vue",
+        "examples/demos/best-practices/extension-manager-integration/ExtensionAddMenu.vue",
+        "examples/demos/best-practices/extension-manager-integration/catalog.ts",
+        "examples/demos/best-practices/extension-manager-integration/extension-catalog-repository.ts",
+        "examples/demos/best-practices/extension-manager-integration/skill-options-storage.ts",
+        "examples/demos/best-practices/extension-manager-integration/integrated.vue",
+        "examples/demos/best-practices/extension-manager-integration/mock-api.ts",
+        "examples/demos/best-practices/extension-manager-integration/use-extension-catalog.ts",
+        "examples/demos/best-practices/extension-manager-integration/use-extension-dialog.ts"
       ]
     },
     {
@@ -45,7 +53,10 @@
       ],
       "doc": "references/docs/components/anchor.md",
       "demos": [
+        "examples/demos/anchor/basic-source.messages.ts",
         "examples/demos/anchor/basic-source.vue",
+        "examples/demos/anchor/demo-shell.css",
+        "examples/demos/anchor/controlled-search.messages.ts",
         "examples/demos/anchor/controlled-search.vue"
       ],
       "exports": [
@@ -116,6 +127,7 @@
       ],
       "doc": "references/docs/components/bubble.md",
       "demos": [
+        "examples/demos/bubble/RecursiveReasoningRenderer.vue",
         "examples/demos/bubble/avatar-and-placement.vue",
         "examples/demos/bubble/basic.vue",
         "examples/demos/bubble/content-render-mode.vue",
@@ -135,6 +147,7 @@
         "examples/demos/bubble/provider-attributes.vue",
         "examples/demos/bubble/provider-renderer.vue",
         "examples/demos/bubble/reasoning.vue",
+        "examples/demos/bubble/schema-card.ce.vue",
         "examples/demos/bubble/schema-render.vue",
         "examples/demos/bubble/shape.vue",
         "examples/demos/bubble/slots.vue",
@@ -374,6 +387,8 @@
         "examples/demos/layout/floating-controlled.vue",
         "examples/demos/layout/floating-panels.vue",
         "examples/demos/layout/floating.vue",
+        "examples/demos/layout/main-scroll-bubble.vue",
+        "examples/demos/layout/main-scroll-div.vue",
         "examples/demos/layout/main-scroll.vue",
         "examples/demos/layout/mode.vue"
       ],
@@ -561,6 +576,7 @@
       "demos": [
         "examples/demos/sender/actions-config-basic.vue",
         "examples/demos/sender/actions-enhanced.vue",
+        "examples/demos/sender/mockSpeechHandler.ts",
         "examples/demos/sender/attachments-in-sender.vue",
         "examples/demos/sender/basic.vue",
         "examples/demos/sender/custom-slots.vue",
@@ -570,11 +586,13 @@
         "examples/demos/sender/methods-demo.vue",
         "examples/demos/sender/mode-switch.vue",
         "examples/demos/sender/size.vue",
+        "examples/demos/sender/speechHandlers.ts",
         "examples/demos/sender/submit-type.vue",
         "examples/demos/sender/suggestion-basic.vue",
         "examples/demos/sender/suggestion-filter.vue",
         "examples/demos/sender/suggestion-highlight.vue",
         "examples/demos/sender/template-editor.vue",
+        "examples/demos/sender/PressToTalkOverlay.vue",
         "examples/demos/sender/voice-custom-ui.vue",
         "examples/demos/sender/voice-custom.vue",
         "examples/demos/sender/voice-input.vue",
@@ -739,8 +757,11 @@
       "doc": "references/docs/components/theme.md",
       "demos": [
         "examples/demos/theme-provider/ColorMode.vue",
+        "examples/demos/theme-provider/ColorModeComp.vue",
         "examples/demos/theme-provider/NestedTheme.vue",
+        "examples/demos/theme-provider/ThemeComp.vue",
         "examples/demos/theme-provider/Storage.vue",
+        "examples/demos/theme-provider/StorageComp.vue",
         "examples/demos/theme-provider/Theme.vue"
       ],
       "exports": [
@@ -795,6 +816,9 @@
       "doc": "references/docs/examples/assistant.md",
       "demos": [
         "examples/demos/examples/AssistantContainerExample.vue",
+        "examples/demos/examples/assistantConstants.ts",
+        "examples/demos/examples/mockMcp.ts",
+        "examples/demos/examples/responseProvider.ts",
         "examples/demos/examples/AssistantPageExample.vue"
       ]
     },
@@ -812,6 +836,19 @@
       ],
       "doc": "references/docs/examples/chat-deepseek.md",
       "demos": [
+        "examples/demos/chat/ChatDemoShell.vue",
+        "examples/demos/chat/shared/base.css",
+        "examples/demos/chat/deepseek/DeepSeekCase.vue",
+        "examples/demos/chat/deepseek/DeepSeekHeader.vue",
+        "examples/demos/chat/deepseek/config.ts",
+        "examples/demos/chat/deepseek/icons/deepseek-mark.svg",
+        "examples/demos/chat/deepseek/icons/deepseek-wordmark.svg",
+        "examples/demos/chat/deepseek/icons/new-chat.svg",
+        "examples/demos/chat/deepseek/icons/search.svg",
+        "examples/demos/chat/deepseek/icons/sidebar-toggle.svg",
+        "examples/demos/chat/shared/createChatRuntime.ts",
+        "examples/demos/chat/shared/mockConversationStorage.ts",
+        "examples/demos/chat/shared/modelProviders.ts",
         "examples/demos/chat/deepseek/Demo.vue"
       ]
     },
@@ -829,7 +866,15 @@
       ],
       "doc": "references/docs/examples/chat-doubao.md",
       "demos": [
-        "examples/demos/chat/doubao/Demo.vue"
+        "examples/demos/chat/ChatDemoShell.vue",
+        "examples/demos/chat/shared/base.css",
+        "examples/demos/chat/doubao/Demo.vue",
+        "examples/demos/chat/doubao/DouBaoCase.vue",
+        "examples/demos/chat/doubao/DouBaoHeader.vue",
+        "examples/demos/chat/doubao/DouBaoIcon.vue",
+        "examples/demos/chat/doubao/DouBaoSidebar.vue",
+        "examples/demos/chat/doubao/config.ts",
+        "examples/demos/chat/doubao/runtime.ts"
       ]
     },
     {
@@ -846,7 +891,21 @@
       ],
       "doc": "references/docs/examples/chat-gemini.md",
       "demos": [
-        "examples/demos/chat/gemini/Demo.vue"
+        "examples/demos/chat/ChatDemoShell.vue",
+        "examples/demos/chat/shared/base.css",
+        "examples/demos/chat/gemini/Demo.vue",
+        "examples/demos/chat/gemini/GeminiCase.vue",
+        "examples/demos/chat/gemini/GeminiComposer.vue",
+        "examples/demos/chat/gemini/GeminiHeader.vue",
+        "examples/demos/chat/gemini/GeminiRail.vue",
+        "examples/demos/chat/gemini/config.ts",
+        "examples/demos/chat/gemini/icons/gemini-mask.svg",
+        "examples/demos/chat/gemini/icons/sidebar-toggle-left.svg",
+        "examples/demos/chat/gemini/icons/sidebar-toggle-menu.svg",
+        "examples/demos/chat/gemini/icons/sidebar-toggle-right.svg",
+        "examples/demos/chat/shared/createChatRuntime.ts",
+        "examples/demos/chat/shared/mockConversationStorage.ts",
+        "examples/demos/chat/shared/modelProviders.ts"
       ]
     },
     {
@@ -863,7 +922,17 @@
       ],
       "doc": "references/docs/examples/chat-tiny-robot.md",
       "demos": [
-        "examples/demos/chat/tiny-robot/Demo.vue"
+        "examples/demos/chat/ChatDemoShell.vue",
+        "examples/demos/chat/shared/base.css",
+        "examples/demos/chat/shared/modelProviders.ts",
+        "examples/demos/chat/tiny-robot/ComposerTools.vue",
+        "examples/demos/chat/tiny-robot/chat-runtime.ts",
+        "examples/demos/chat/tiny-robot/chat-ui.ts",
+        "examples/demos/chat/tiny-robot/Demo.vue",
+        "examples/demos/chat/tiny-robot/TinyRobotChat.vue",
+        "examples/demos/chat/tiny-robot/WindowHeader.vue",
+        "examples/demos/chat/tiny-robot/index.css",
+        "examples/demos/chat/tiny-robot/useWindow.ts"
       ]
     },
     {
@@ -880,7 +949,13 @@
       ],
       "doc": "references/docs/examples/chat-worker-helper.md",
       "demos": [
-        "examples/demos/chat/worker-helper/Demo.vue"
+        "examples/demos/chat/ChatDemoShell.vue",
+        "examples/demos/chat/shared/base.css",
+        "examples/demos/chat/shared/createChatRuntime.ts",
+        "examples/demos/chat/shared/mockConversationStorage.ts",
+        "examples/demos/chat/shared/modelProviders.ts",
+        "examples/demos/chat/worker-helper/Demo.vue",
+        "examples/demos/chat/worker-helper/WorkHelperCase.vue"
       ]
     },
     {
@@ -1207,8 +1282,14 @@
       "doc": "references/docs/suites/chat.md",
       "demos": [
         "examples/demos/chat/bubble-options.vue",
+        "examples/demos/chat/shared/createChatRuntime.ts",
+        "examples/demos/chat/shared/mockConversationStorage.ts",
+        "examples/demos/chat/shared/modelProviders.ts",
+        "examples/demos/chat/business-right-aside.vue",
+        "examples/demos/chat/release-preview.html",
         "examples/demos/chat/controlled-ui.vue",
         "examples/demos/chat/extension-tabs.vue",
+        "examples/demos/chat/useExtensionTabsDemo.ts",
         "examples/demos/chat/floating-layout.vue",
         "examples/demos/chat/history-groups.vue",
         "examples/demos/chat/layout-presets.vue",
@@ -1248,10 +1329,13 @@
       "doc": "references/docs/suites/chat-runtime.md",
       "demos": [
         "examples/demos/chat/runtime-actions.vue",
+        "examples/demos/chat/shared/modelProviders.ts",
+        "examples/demos/chat/shared/runtime-demo.css",
         "examples/demos/chat/runtime-adapter.vue",
         "examples/demos/chat/runtime-before-send.vue",
         "examples/demos/chat/runtime-composer.vue",
         "examples/demos/chat/runtime-conversations.vue",
+        "examples/demos/chat/shared/mockConversationStorage.ts",
         "examples/demos/chat/runtime-send.vue"
       ],
       "exports": [
@@ -1334,9 +1418,12 @@
       "doc": "references/docs/tools/conversation.md",
       "demos": [
         "examples/demos/tools/conversation/Basic.vue",
+        "examples/demos/tools/conversation/mockResponseProvider.ts",
+        "examples/demos/tools/conversation/mockStorageStrategy.ts",
         "examples/demos/tools/conversation/IndexedDB.vue",
         "examples/demos/tools/conversation/LocalStorage.vue",
-        "examples/demos/tools/storage/Custom.vue"
+        "examples/demos/tools/storage/Custom.vue",
+        "examples/demos/tools/storage/mockResponseProvider.ts"
       ]
     },
     {
@@ -1359,13 +1446,21 @@
       ],
       "doc": "references/docs/tools/message.md",
       "demos": [
+        "examples/demos/tools/message/Basic.ts",
         "examples/demos/tools/message/Basic.vue",
+        "examples/demos/tools/message/CustomChunk.ts",
         "examples/demos/tools/message/CustomChunk.vue",
+        "examples/demos/tools/message/ErrorHandling.ts",
         "examples/demos/tools/message/ErrorHandling.vue",
+        "examples/demos/tools/message/MockStream.ts",
         "examples/demos/tools/message/MockStream.vue",
+        "examples/demos/tools/message/NonStreaming.ts",
         "examples/demos/tools/message/NonStreaming.vue",
+        "examples/demos/tools/message/OnBeforeRequest.ts",
         "examples/demos/tools/message/OnBeforeRequest.vue",
+        "examples/demos/tools/message/RequestState.ts",
         "examples/demos/tools/message/RequestState.vue",
+        "examples/demos/tools/message/ToolCall.ts",
         "examples/demos/tools/message/ToolCall.vue"
       ]
     },
@@ -1389,7 +1484,11 @@
       ],
       "doc": "references/docs/tools/skill.md",
       "demos": [
+        "examples/demos/tools/skill/SkillInspector.css",
         "examples/demos/tools/skill/SkillInspector.vue",
+        "examples/demos/tools/skill/exampleSkillFiles.ts",
+        "examples/demos/tools/skill/useSkillInspector.ts",
+        "examples/demos/tools/skill/VueSkillPlugin.css",
         "examples/demos/tools/skill/VueSkillPlugin.vue"
       ]
     },

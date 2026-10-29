@@ -1,4 +1,4 @@
-import { cp, mkdir, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises'
+import { cp, lstat, mkdir, readFile, readdir, realpath, rm, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -154,9 +154,77 @@ async function listMarkdownFiles(root: string): Promise<string[]> {
 
 function extractDemoReferences(content: string) {
   const references: string[] = []
-  const pattern = /<demo\b[^>]*\bvue=(['"])(.*?)\1[^>]*\/?\s*>/g
-  for (const match of content.matchAll(pattern)) references.push(match[2])
+  for (const tagMatch of content.matchAll(/<demo\b[\s\S]*?\/?\s*>/g)) {
+    const tag = tagMatch[0]
+    const primary = tag.match(/(?:^|\s)vue\s*=\s*(['"])(.*?)\1/)
+    if (primary) references.push(primary[2])
+    const files = tag.match(/(?:^|\s):vueFiles\s*=\s*(['"])([\s\S]*?)\1/)
+    if (files) {
+      for (const fileMatch of files[2].matchAll(/(['"])(.*?)\1/g)) references.push(fileMatch[2])
+    }
+  }
   return [...new Set(references)].sort()
+}
+
+function extractLocalDependencies(content: string) {
+  const dependencies: string[] = []
+  const patterns = [
+    /(?:^|\n)\s*import\s*(['"])([^'"]+)\1/g,
+    /(?:^|\n)\s*import(?:(?!\n\s*import\b)[\s\S])*?\sfrom\s*(['"])([^'"]+)\1/g,
+    /(?:^|\n)\s*export(?:(?!\n\s*(?:import|export)\b)[\s\S])*?\sfrom\s*(['"])([^'"]+)\1/g,
+    /\bimport\s*\(\s*(['"])([^'"]+)\1\s*\)/g,
+    /\bnew\s+URL\s*\(\s*(['"])([^'"]+)\1\s*,\s*import\.meta\.url\s*\)/g,
+    /@import\s+(?:url\(\s*)?(['"])([^'"]+)\1\s*\)?/g,
+    /\burl\(\s*(['"]?)([^)'"\s]+)\1\s*\)/g,
+    /\b(?:src|href)\s*=\s*(['"])([^'"]+)\1/g,
+  ]
+  for (const pattern of patterns) {
+    for (const match of content.matchAll(pattern)) {
+      const specifier = match[2]
+      if (specifier?.startsWith('.')) dependencies.push(specifier)
+    }
+  }
+  return [...new Set(dependencies)].sort()
+}
+
+const DEPENDENCY_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.vue', '.css', '.scss', '.json', '.svg']
+
+async function resolveLocalDependency(sourcePath: string, specifier: string) {
+  const cleanSpecifier = specifier.replace(/[?#].*$/, '')
+  const base = path.resolve(path.dirname(sourcePath), cleanSpecifier)
+  const candidates = DEPENDENCY_EXTENSIONS.includes(path.extname(base))
+    ? [base]
+    : [base, ...DEPENDENCY_EXTENSIONS.map((extension) => `${base}${extension}`), ...DEPENDENCY_EXTENSIONS.map((extension) => path.join(base, `index${extension}`))]
+  for (const candidate of candidates) {
+    if ((await exists(candidate)) && (await stat(candidate)).isFile()) return candidate
+  }
+  throw new Error(`local demo dependency does not exist: ${specifier} (from ${sourcePath})`)
+}
+
+async function assertSafeDemoFile(demosRootRealPath: string, sourcePath: string, label: string) {
+  if (!(await exists(sourcePath))) throw new Error(`${label} does not exist: ${sourcePath}`)
+  if ((await lstat(sourcePath)).isSymbolicLink()) throw new Error(`${label} must not be a symlink: ${sourcePath}`)
+  const sourceRealPath = await realpath(sourcePath)
+  if (!isPathInside(demosRootRealPath, sourceRealPath)) {
+    throw new Error(`${label} real target escapes demos root: ${sourcePath}`)
+  }
+}
+
+async function collectDemoDependencyClosure(entryPath: string, demosRootRealPath: string) {
+  const collected = new Set<string>()
+  const queue = [entryPath]
+  while (queue.length) {
+    const sourcePath = queue.shift()!
+    if (collected.has(sourcePath)) continue
+    await assertSafeDemoFile(demosRootRealPath, sourcePath, 'demo file')
+    collected.add(sourcePath)
+    const content = await readFile(sourcePath, 'utf8')
+    for (const specifier of extractLocalDependencies(content)) {
+      const dependencyPath = await resolveLocalDependency(sourcePath, specifier)
+      if (!collected.has(dependencyPath)) queue.push(dependencyPath)
+    }
+  }
+  return [...collected].sort()
 }
 
 function extractTitle(content: string, fallback: string) {
@@ -291,7 +359,12 @@ export async function syncTinyRobotSkill(options: SyncOptions): Promise<SyncRepo
   const skillRoot = path.resolve(options.skillRoot)
   const docsRoot = path.join(sourceRoot, 'docs')
   const docsSourceRoot = path.join(docsRoot, 'src')
+  const demosRoot = path.join(docsRoot, 'demos')
   if (!(await exists(docsSourceRoot))) throw new Error(`TinyRobot docs source not found: ${docsSourceRoot}`)
+  const docsRootRealPath = await realpath(docsRoot)
+  if ((await lstat(demosRoot)).isSymbolicLink()) throw new Error(`demos root must not be a symlink: ${demosRoot}`)
+  const demosRootRealPath = await realpath(demosRoot)
+  if (!isPathInside(docsRootRealPath, demosRootRealPath)) throw new Error(`demos root escapes docs root: ${demosRoot}`)
   const overrides = await loadOverrides()
   const excludedDocs = new Set(overrides.excludedDocs ?? [])
   const publicExports = await loadPackageRootExports(sourceRoot)
@@ -321,12 +394,14 @@ export async function syncTinyRobotSkill(options: SyncOptions): Promise<SyncRepo
         if (!docsRelative.startsWith(`demos${path.sep}`)) {
           throw new Error(`demo reference must target docs/demos: ${reference}`)
         }
-        if (!(await exists(demoSourcePath))) throw new Error(`referenced demo does not exist: ${reference}`)
-        const demoRelative = path.relative(path.join(docsRoot, 'demos'), demoSourcePath)
-        const demoOutputPath = safeResolve(path.join(skillRoot, 'examples/demos'), demoRelative, 'demo output')
-        demoSourcePaths.push(demoSourcePath)
-        demoOutputPaths.push(path.relative(skillRoot, demoOutputPath))
-        demoCopies.set(demoSourcePath, demoOutputPath)
+        for (const dependencyPath of await collectDemoDependencyClosure(demoSourcePath, demosRootRealPath)) {
+          const demoRelative = path.relative(demosRoot, dependencyPath)
+          const demoOutputPath = safeResolve(path.join(skillRoot, 'examples/demos'), demoRelative, 'demo output')
+          if (!demoSourcePaths.includes(dependencyPath)) demoSourcePaths.push(dependencyPath)
+          const relativeOutputPath = path.relative(skillRoot, demoOutputPath)
+          if (!demoOutputPaths.includes(relativeOutputPath)) demoOutputPaths.push(relativeOutputPath)
+          demoCopies.set(dependencyPath, demoOutputPath)
+        }
       }
 
       documents.push({ group, relativePath, sourcePath, outputPath, content, demoSourcePaths, demoOutputPaths })

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { mkdtemp, mkdir, readFile, writeFile } from 'node:fs/promises'
+import { mkdtemp, mkdir, readFile, symlink, writeFile } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 import test from 'node:test'
@@ -126,6 +126,21 @@ test('reports missing docs and demos', async () => {
     issues.map((issue) => issue.code),
     ['missing-doc', 'missing-demo'],
   )
+})
+
+test('reports symlinked snapshot files even when their target exists', async () => {
+  const { root, skillRoot, marketplacePath } = await createFixture()
+  const target = path.join(skillRoot, 'examples/demos/layout/basic.vue')
+  const outside = path.join(root, 'outside.vue')
+  await writeFile(outside, '<template>outside</template>\n')
+  await writeFile(target, '')
+  await symlink(outside, `${target}.link`)
+  await overwriteIndex(skillRoot, (index) => {
+    index.entries[0].demos = ['examples/demos/layout/basic.vue.link']
+  })
+
+  const issues = await validateTinyRobotSkill({ skillRoot, marketplacePath, scope: 'snapshot' })
+  assert.equal(issues[0].code, 'unsafe-demo')
 })
 
 test('reports duplicate aliases, invalid statuses, and invalid deprecated entries', async () => {

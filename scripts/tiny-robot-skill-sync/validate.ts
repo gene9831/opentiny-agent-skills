@@ -1,4 +1,4 @@
-import { access, readFile } from 'node:fs/promises'
+import { access, lstat, readFile, realpath } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -44,6 +44,14 @@ function resolveInside(root: string, relativePath: string) {
   return target
 }
 
+async function fileSafety(root: string, target: string): Promise<'safe' | 'missing' | 'unsafe'> {
+  if (!(await exists(target))) return 'missing'
+  const [rootRealPath, targetRealPath, targetInfo] = await Promise.all([realpath(root), realpath(target), lstat(target)])
+  const relative = path.relative(rootRealPath, targetRealPath)
+  const inside = relative === '' || (!path.isAbsolute(relative) && relative !== '..' && !relative.startsWith(`..${path.sep}`))
+  return inside && !targetInfo.isSymbolicLink() ? 'safe' : 'unsafe'
+}
+
 function issue(code: string, message: string, issuePath?: string): ValidationIssue {
   return issuePath ? { code, path: issuePath, message } : { code, message }
 }
@@ -80,13 +88,19 @@ async function validateEntry(skillRoot: string, entry: TinyRobotIndexEntry) {
   }
 
   const docPath = resolveInside(skillRoot, entry.doc)
-  if (!docPath || !(await exists(docPath))) {
+  const docSafety = docPath ? await fileSafety(skillRoot, docPath) : 'unsafe'
+  if (docSafety === 'missing') {
     issues.push(issue('missing-doc', `Documentation for ${entry.id} does not exist`, entry.doc))
+  } else if (docSafety === 'unsafe') {
+    issues.push(issue('unsafe-doc', `Documentation for ${entry.id} must be a regular file inside the skill`, entry.doc))
   }
   for (const demo of entry.demos) {
     const demoPath = resolveInside(skillRoot, demo)
-    if (!demoPath || !(await exists(demoPath))) {
+    const demoSafety = demoPath ? await fileSafety(skillRoot, demoPath) : 'unsafe'
+    if (demoSafety === 'missing') {
       issues.push(issue('missing-demo', `Demo for ${entry.id} does not exist`, demo))
+    } else if (demoSafety === 'unsafe') {
+      issues.push(issue('unsafe-demo', `Demo for ${entry.id} must be a regular file inside the skill`, demo))
     }
   }
   return issues

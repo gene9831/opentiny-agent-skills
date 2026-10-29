@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { mkdtemp, mkdir, readFile, writeFile, access } from 'node:fs/promises'
+import { access, mkdir, mkdtemp, readFile, symlink, writeFile } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 import test from 'node:test'
@@ -20,7 +20,8 @@ async function createFixture() {
   const docs: Record<string, string> = {
     'guide/quick-start.md': '# 快速开始\n',
     'guide/plugin-badge.md': '# VitePress badge plugin internals\n',
-    'suites/quick-start.md': '# Chat 快速上手\n<demo vue="../../demos/chat/basic.vue" />\n',
+    'suites/quick-start.md':
+      '# Chat 快速上手\n<demo\n  vue = "../../demos/chat/basic.vue"\n  :vueFiles = "[\'../../demos/chat/basic.vue\', \'../../demos/chat/helper.ts\']"\n/>\n',
     'components/layout.md': '# Layout 布局\n<demo vue="../../demos/layout/basic.vue" />\n',
     'components/container.md': '---\nbadge: deprecated\n---\n# Container 容器\n',
     'components/mcp-server-picker.md': '---\nbadge: deprecated\n---\n# McpServerPicker 插件选择器\n',
@@ -34,7 +35,20 @@ async function createFixture() {
     await write(sourceRoot, `docs/src/${relativePath}`, content)
   }
 
-  await write(sourceRoot, 'docs/demos/chat/basic.vue', '<template>chat</template>\n')
+  await write(
+    sourceRoot,
+    'docs/demos/chat/basic.vue',
+    '<script setup lang="ts">\nimport NestedBubble from \'./NestedBubble.vue\'\n</script>\n<template><NestedBubble /></template>\n',
+  )
+  await write(sourceRoot, 'docs/demos/chat/NestedBubble.vue', '<template>nested</template>\n')
+  await write(
+    sourceRoot,
+    'docs/demos/chat/helper.ts',
+    "import './helper.css'\nimport { messages } from './state.messages'\nexport const helper = messages.length === 0\n",
+  )
+  await write(sourceRoot, 'docs/demos/chat/helper.css', '.helper { background: url("./icon.svg"); }\n')
+  await write(sourceRoot, 'docs/demos/chat/icon.svg', '<svg xmlns="http://www.w3.org/2000/svg" />\n')
+  await write(sourceRoot, 'docs/demos/chat/state.messages.ts', 'export const messages = []\n')
   await write(sourceRoot, 'docs/demos/layout/basic.vue', '<template>layout</template>\n')
   await write(sourceRoot, 'docs/demos/layout/unreferenced.vue', '<template>unused</template>\n')
   await write(
@@ -76,7 +90,7 @@ test('syncs the formal 1.0 snapshot and only referenced demos', async () => {
   })
 
   assert.equal(report.documentsCopied, 9)
-  assert.equal(report.demosCopied, 2)
+  assert.equal(report.demosCopied, 7)
   await access(path.join(skillRoot, 'references/docs/guide/quick-start.md'))
   await assert.rejects(access(path.join(skillRoot, 'references/docs/guide/plugin-badge.md')))
   await access(path.join(skillRoot, 'references/docs/suites/quick-start.md'))
@@ -86,6 +100,11 @@ test('syncs the formal 1.0 snapshot and only referenced demos', async () => {
   await access(path.join(skillRoot, 'references/docs/migration/v1.0/container.md'))
   await access(path.join(skillRoot, 'references/docs/examples/assistant.md'))
   await access(path.join(skillRoot, 'examples/demos/chat/basic.vue'))
+  await access(path.join(skillRoot, 'examples/demos/chat/helper.ts'))
+  await access(path.join(skillRoot, 'examples/demos/chat/NestedBubble.vue'))
+  await access(path.join(skillRoot, 'examples/demos/chat/helper.css'))
+  await access(path.join(skillRoot, 'examples/demos/chat/icon.svg'))
+  await access(path.join(skillRoot, 'examples/demos/chat/state.messages.ts'))
   await access(path.join(skillRoot, 'examples/demos/layout/basic.vue'))
   await assert.rejects(access(path.join(skillRoot, 'examples/demos/layout/unreferenced.vue')))
 
@@ -113,7 +132,7 @@ test('syncs the formal 1.0 snapshot and only referenced demos', async () => {
     tinyRobotVersion: '1.0.x',
     source: { ref: 'release/v1.0.x', commit: 'abc123' },
     documents: 9,
-    demos: 2,
+    demos: 7,
   })
 
   assert.equal(await readFile(path.join(skillRoot, 'SKILL.md'), 'utf8'), '# keep\n')
@@ -138,6 +157,48 @@ test('rejects demo references that escape the TinyRobot docs tree', async () => 
       sourceCommit: 'abc123',
     }),
     /escapes docs root/,
+  )
+})
+
+test('rejects demo symlinks whose real target escapes the demos tree', async () => {
+  const { root, skillRoot, sourceRoot } = await createFixture()
+  const outsidePath = path.join(root, 'outside.vue')
+  await writeFile(outsidePath, '<template>outside</template>\n')
+  await symlink(outsidePath, path.join(sourceRoot, 'docs/demos/layout/linked.vue'))
+  await write(
+    sourceRoot,
+    'docs/src/examples/linked.md',
+    '# Linked\n<demo vue="../../demos/layout/linked.vue" />\n',
+  )
+
+  await assert.rejects(
+    syncTinyRobotSkill({
+      sourceRoot,
+      skillRoot,
+      sourceRef: 'release/v1.0.x',
+      sourceCommit: 'abc123',
+    }),
+    /symlink|escapes demos root/,
+  )
+})
+
+test('rejects a docs/demos root that is itself a symlink', async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'tiny-robot-skill-sync-root-link-'))
+  const sourceRoot = path.join(root, 'tiny-robot')
+  const skillRoot = path.join(root, 'skill')
+  const externalDemos = path.join(root, 'external-demos')
+  await write(sourceRoot, 'docs/src/guide/linked.md', '# Linked\n<demo vue="../../demos/basic.vue" />\n')
+  await write(externalDemos, 'basic.vue', '<template>outside</template>\n')
+  await symlink(externalDemos, path.join(sourceRoot, 'docs/demos'), 'dir')
+
+  await assert.rejects(
+    syncTinyRobotSkill({
+      sourceRoot,
+      skillRoot,
+      sourceRef: 'release/v1.0.x',
+      sourceCommit: 'abc123',
+    }),
+    /demos root must not be a symlink|escapes docs root/,
   )
 })
 
