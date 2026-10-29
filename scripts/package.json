@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "tiny-vue-skill-post-process": "tsx ./tiny-vue-skill-post-process/index.ts",
-    "tiny-robot-skill-post-process": "tsx ./tiny-robot-skill-post-process/index.ts"
+    "tiny-robot-skill-post-process": "tsx ./tiny-robot-skill-post-process/index.ts",
+    "tiny-robot-skill-sync": "tsx ./tiny-robot-skill-sync/index.ts",
+    "test:tiny-robot-skill-sync": "tsx --test ./tiny-robot-skill-sync/index.test.ts"
   },
   "devDependencies": {
     "@types/node": "^20.4.2",
