@@ -194,6 +194,16 @@ function defaultNames(group: DocGroup, id: string, title: string) {
   return [...new Set(names)]
 }
 
+function uniqueNames(names: string[]) {
+  const seen = new Set<string>()
+  return names.filter((name) => {
+    const normalized = name.trim().toLocaleLowerCase()
+    if (!normalized || seen.has(normalized)) return false
+    seen.add(normalized)
+    return true
+  })
+}
+
 async function loadOverrides(): Promise<CatalogOverrides> {
   const currentDir = path.dirname(fileURLToPath(import.meta.url))
   return JSON.parse(await readFile(path.join(currentDir, 'catalog-overrides.json'), 'utf8')) as CatalogOverrides
@@ -243,7 +253,7 @@ export async function buildTinyRobotIndex(options: BuildIndexOptions): Promise<T
 
     const entry: TinyRobotIndexEntry = {
       id,
-      names: [...new Set([...defaultNames(document.group, id, title), ...(override.aliases ?? [])])],
+      names: uniqueNames([...defaultNames(document.group, id, title), ...(override.aliases ?? [])]),
       package: override.package ?? GROUP_PACKAGE[document.group],
       kind: GROUP_KIND[document.group],
       status,
@@ -340,6 +350,19 @@ export async function syncTinyRobotSkill(options: SyncOptions): Promise<SyncRepo
     publicExports,
   })
   await writeFile(path.join(skillRoot, 'component-index.json'), `${JSON.stringify(index, null, 2)}\n`)
+  await writeFile(
+    path.join(skillRoot, 'references/docs/.snapshot.json'),
+    `${JSON.stringify(
+      {
+        tinyRobotVersion: index.tinyRobotVersion,
+        source: index.source,
+        documents: documents.length,
+        demos: demoCopies.size,
+      },
+      null,
+      2,
+    )}\n`,
+  )
 
   return {
     documentsCopied: documents.length,

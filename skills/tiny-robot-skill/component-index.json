@@ -31,7 +31,6 @@
       "names": [
         "Anchor 锚点",
         "anchor",
-        "Anchor",
         "TrAnchor",
         "锚点"
       ],
@@ -58,7 +57,6 @@
       "names": [
         "Attachments 附件卡片",
         "attachments",
-        "Attachments",
         "TrAttachments"
       ],
       "package": "@opentiny/tiny-robot",
@@ -100,7 +98,6 @@
       "names": [
         "Bubble 气泡组件",
         "bubble",
-        "Bubble",
         "TrBubble",
         "BubbleList",
         "BubbleProvider",
@@ -157,7 +154,6 @@
       "names": [
         "Container 容器",
         "container",
-        "Container",
         "TrContainer",
         "容器"
       ],
@@ -287,7 +283,6 @@
       "names": [
         "Feedback 气泡反馈",
         "feedback",
-        "Feedback",
         "TrFeedback"
       ],
       "package": "@opentiny/tiny-robot",
@@ -317,7 +312,6 @@
       "id": "history",
       "names": [
         "History",
-        "history",
         "TrHistory"
       ],
       "package": "@opentiny/tiny-robot",
@@ -356,7 +350,6 @@
       "names": [
         "Layout 布局",
         "layout",
-        "Layout",
         "TrLayout",
         "布局"
       ],
@@ -514,7 +507,6 @@
       "names": [
         "Prompts 提示集组件",
         "prompts",
-        "Prompts",
         "TrPrompts",
         "Prompt",
         "TrPrompt",
@@ -550,7 +542,6 @@
       "names": [
         "Sender 消息输入框",
         "sender",
-        "Sender",
         "TrSender",
         "消息输入框",
         "输入区"
@@ -730,7 +721,6 @@
       "id": "theme",
       "names": [
         "Theme",
-        "theme",
         "TrTheme",
         "ThemeProvider",
         "TrThemeProvider",
@@ -762,7 +752,6 @@
       "id": "welcome",
       "names": [
         "Welcome",
-        "welcome",
         "TrWelcome"
       ],
       "package": "@opentiny/tiny-robot",

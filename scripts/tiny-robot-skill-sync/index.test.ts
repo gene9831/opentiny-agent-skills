@@ -101,6 +101,20 @@ test('syncs the formal 1.0 snapshot and only referenced demos', async () => {
     'extension-manager',
   ])
   assert.equal(index.entries.some((entry: { id: string }) => entry.id === 'icon-button'), false)
+  for (const entry of index.entries) {
+    assert.equal(
+      new Set(entry.names.map((name: string) => name.toLocaleLowerCase())).size,
+      entry.names.length,
+      `${entry.id} aliases are unique`,
+    )
+  }
+  const snapshot = JSON.parse(await readFile(path.join(skillRoot, 'references/docs/.snapshot.json'), 'utf8'))
+  assert.deepEqual(snapshot, {
+    tinyRobotVersion: '1.0.x',
+    source: { ref: 'release/v1.0.x', commit: 'abc123' },
+    documents: 9,
+    demos: 2,
+  })
 
   assert.equal(await readFile(path.join(skillRoot, 'SKILL.md'), 'utf8'), '# keep\n')
   assert.equal(await readFile(path.join(skillRoot, 'references/product-model.md'), 'utf8'), '# keep hand-authored\n')
