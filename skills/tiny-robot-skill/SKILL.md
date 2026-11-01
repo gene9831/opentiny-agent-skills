@@ -61,7 +61,7 @@ Load only the routed reference plus the exact indexed docs and demos it names.
 
 - New 1.0 work uses `Layout`, not deprecated `Container`.
 - New extension management uses `ExtensionManager`, not deprecated `McpServerPicker`.
-- ExtensionManager presents and emits actions; the application owns installation, persistence, enablement, and detail navigation.
+- Standalone ExtensionManager presents and emits actions; the application owns operations and hosting its forms/details. Chat already hosts its MCP form, validates it, then emits `mcp-create-server`; follow [product-model.md](references/product-model.md) for UI, Runtime, and persistence ownership.
 - Production model credentials stay on a server-side boundary; browser-side keys are only for local temporary experiments.
 - If evidence does not establish an API, state what was checked and leave the API unconfirmed. Do not produce plausible code.
 - Do not activate this skill for ordinary Vue UI that does not use TinyRobot.
